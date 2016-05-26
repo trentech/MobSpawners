@@ -1,5 +1,6 @@
 package com.gmail.trentech.customspawners;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -100,8 +101,9 @@ public class Main {
 			return;
 		}
 		Location<World> startLocation = optionalLocation.get();
+
+		List<EntityType> entities = spawner.getEntities();
 		
-		EntityType entityType = spawner.getEntity();
 
         Main.getGame().getScheduler().createTaskBuilder().interval(spawner.getTime(), TimeUnit.SECONDS).name(name).execute(t -> {
         	for(int i = 0; i < spawner.getAmount(); i++) {
@@ -110,6 +112,8 @@ public class Main {
         		if(spawner.getRadius() > 1) {
         			location = getRandomLocation(startLocation, spawner.getRadius());
         		}
+        		
+        		EntityType entityType = entities.get(random.nextInt(entities.size()));
         		
         		Optional<Entity> optionalEntity = location.getExtent().createEntity(entityType, location.getPosition());
         		

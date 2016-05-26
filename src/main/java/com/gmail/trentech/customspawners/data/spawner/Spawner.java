@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,15 +26,15 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 	private static ConcurrentHashMap<String, Spawner> cache = new ConcurrentHashMap<>();
 	
-	protected String entity;
+	protected List<String> entities;
 	protected String location;
 	protected int amount;
 	protected int time;
 	protected int radius;
 	protected boolean enable;
 	
-	public Spawner(String entity, String location, int amount, int time, int radius, boolean enable) {
-		this.entity = entity;
+	public Spawner(List<String> entities, String location, int amount, int time, int radius, boolean enable) {
+		this.entities = entities;
 		this.location = location;
 		this.amount = amount;
 		this.time = time;
@@ -40,12 +42,22 @@ public class Spawner extends SQLUtils implements DataSerializable {
 		this.enable = enable;
 	}
 
-	public EntityType getEntity() {
-		return Main.getGame().getRegistry().getType(EntityType.class, entity).get();
+	public List<EntityType> getEntities() {
+		List<EntityType> list = new ArrayList<>();
+		
+		for(String entity : entities) {
+			list.add(Main.getGame().getRegistry().getType(EntityType.class, entity).get());
+		}
+		
+		return list;
 	}
 
-	public void setEntity(EntityType entityType) {
-		this.entity = entityType.getId();
+	public void addEntity(EntityType entityType) {
+		String entity = entityType.getId();
+		
+		if(!entities.contains(entity)) {
+			entities.add(entity);
+		}
 	}
 
 	public Optional<Location<World>> getLocation() {
@@ -224,7 +236,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 	@Override
     public DataContainer toContainer() {
-        return new MemoryDataContainer().set(DataQueries.ENTITY, entity).set(DataQueries.LOCATION, location).set(DataQueries.AMOUNT, amount)
+        return new MemoryDataContainer().set(DataQueries.ENTITIES, entities).set(DataQueries.LOCATION, location).set(DataQueries.AMOUNT, amount)
         		.set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable);
     }
 }

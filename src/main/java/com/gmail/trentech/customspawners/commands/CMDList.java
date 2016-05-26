@@ -9,6 +9,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.service.pagination.PaginationList.Builder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -46,11 +47,15 @@ public class CMDList implements CommandExecutor {
 				enable = Text.of(TextColors.GREEN, "Status: ", TextColors.RED, "disabled\n  ");
 			}
 			
-			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable,
-					TextColors.GREEN, "Entity: ", TextColors.WHITE, spawner.getEntity().getId(), "\n  ",
-					TextColors.GREEN, "Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ",
-					TextColors.GREEN, "Time: ", TextColors.WHITE, spawner.getTime(), "\n  ",
-					TextColors.GREEN, "Radius: ", TextColors.WHITE, spawner.getRadius(), "\n"));
+			Text ents = Text.of(TextColors.YELLOW, "  Entities: \n", TextColors.WHITE);
+			for(EntityType entityType : spawner.getEntities()) {
+				ents = Text.join(ents, Text.of("    - ", entityType.getId(), "\n"));
+			}
+			
+			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, ents,
+					TextColors.YELLOW, "  Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ",
+					TextColors.YELLOW, "  Time: ", TextColors.WHITE, spawner.getTime(), "\n  ",
+					TextColors.YELLOW, "  Radius: ", TextColors.WHITE, spawner.getRadius(), "\n"));
 		}
 		
 		pages.contents(list);

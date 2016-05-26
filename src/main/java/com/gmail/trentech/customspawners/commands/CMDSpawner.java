@@ -8,6 +8,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList.Builder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -54,7 +55,8 @@ public class CMDSpawner implements CommandExecutor {
 		pages.contents(list);
 		
 		pages.sendTo(src);
-		
+		Main.getGame().getCommandManager().process(Main.getGame().getServer().getConsole(), "give " + ((Player) src).getName() + " mob_spawner 1 0 {BlockEntityTag:{EntityId:NONE}, display:{Name:Custom Spawner}}");
+
 		return CommandResult.success();
 	}
 }
