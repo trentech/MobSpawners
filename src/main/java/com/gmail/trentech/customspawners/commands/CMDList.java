@@ -3,6 +3,7 @@ package com.gmail.trentech.customspawners.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -14,6 +15,8 @@ import org.spongepowered.api.service.pagination.PaginationList.Builder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.customspawners.Main;
 import com.gmail.trentech.customspawners.data.spawner.Spawner;
@@ -40,22 +43,36 @@ public class CMDList implements CommandExecutor {
 			String name = entry.getKey();
 			Spawner spawner = entry.getValue();
 			
-			Text enable;
-			if(spawner.isEnabled()) {
-				enable = Text.of(TextColors.GREEN, "Status: ", TextColors.WHITE, "enabled\n  ");
+			Optional<Location<World>> optionalLocation = spawner.getLocation();
+			
+			Text loc = Text.of(TextColors.YELLOW, "Location: ");
+			if(optionalLocation.isPresent()) {
+				Location<World> location = optionalLocation.get();
+				
+				loc = Text.join(loc, Text.of(TextColors.GREEN, "w: ", TextColors.WHITE, location.getExtent().getName(), 
+						TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(),
+						TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(),
+						TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  "));
 			}else {
-				enable = Text.of(TextColors.GREEN, "Status: ", TextColors.RED, "disabled\n  ");
+				loc = Text.join(loc, Text.of(TextColors.RED, "Not Valid"));
 			}
 			
-			Text ents = Text.of(TextColors.YELLOW, "  Entities: \n", TextColors.WHITE);
+			Text enable = Text.of(TextColors.YELLOW, "Status: ");
+			if(spawner.isEnabled()) {
+				enable = Text.join(enable, Text.of(TextColors.GREEN, "enabled\n  "));
+			}else {
+				enable = Text.join(enable, Text.of(TextColors.RED, "disabled\n  "));
+			}
+			
+			Text ents = Text.of(TextColors.YELLOW, "Entities: \n", TextColors.WHITE);
 			for(EntityType entityType : spawner.getEntities()) {
-				ents = Text.join(ents, Text.of("    - ", entityType.getId(), "\n"));
+				ents = Text.join(ents, Text.of("  - ", entityType.getId(), "\n"));
 			}
 			
-			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, ents,
-					TextColors.YELLOW, "  Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ",
-					TextColors.YELLOW, "  Time: ", TextColors.WHITE, spawner.getTime(), "\n  ",
-					TextColors.YELLOW, "  Radius: ", TextColors.WHITE, spawner.getRadius(), "\n"));
+			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, loc,
+					TextColors.YELLOW, "Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ",
+					TextColors.YELLOW, "Time: ", TextColors.WHITE, spawner.getTime(), "\n  ",
+					TextColors.YELLOW, "Radius: ", TextColors.WHITE, spawner.getRadius(), "\n  ", ents));
 		}
 		
 		pages.contents(list);
