@@ -26,14 +26,14 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 	private static ConcurrentHashMap<String, Spawner> cache = new ConcurrentHashMap<>();
 	
-	protected List<String> entities;
-	protected String location;
+	protected List<EntityType> entities;
+	protected Location<World> location;
 	protected int amount;
 	protected int time;
 	protected int radius;
 	protected boolean enable;
 	
-	public Spawner(List<String> entities, String location, int amount, int time, int radius, boolean enable) {
+	public Spawner(List<EntityType> entities, Location<World> location, int amount, int time, int radius, boolean enable) {
 		this.entities = entities;
 		this.location = location;
 		this.amount = amount;
@@ -43,46 +43,21 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	}
 
 	public List<EntityType> getEntities() {
-		List<EntityType> list = new ArrayList<>();
-		
-		for(String entity : entities) {
-			list.add(Main.getGame().getRegistry().getType(EntityType.class, entity).get());
-		}
-		
-		return list;
+		return entities;
 	}
 
 	public void addEntity(EntityType entityType) {
-		String entity = entityType.getId();
-		
-		if(!entities.contains(entity)) {
-			entities.add(entity);
+		if(!entities.contains(entityType)) {
+			entities.add(entityType);
 		}
 	}
 
-	public Optional<Location<World>> getLocation() {
-		String[] split = location.split("\\.");
-		
-		Optional<World> optionalWorld = Main.getGame().getServer().getWorld(split[0]);
-		
-		if(!optionalWorld.isPresent()){
-			return Optional.empty();
-		}
-		World world = optionalWorld.get();
-		
-		try{
-			int x = Integer.parseInt(split[1]);
-			int y = Integer.parseInt(split[2]);
-			int z = Integer.parseInt(split[3]);
-			
-			return Optional.of(world.getLocation(x, y, z));
-		}catch(Exception e) {
-			return Optional.empty();
-		}		
+	public Location<World> getLocation() {
+		return location;	
 	}
 	
 	public void setLocation(Location<World> location) {
-		this.location = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
+		this.location = location;
 	}
 	
 	public int getAmount() {
@@ -236,7 +211,14 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 	@Override
     public DataContainer toContainer() {
-        return new MemoryDataContainer().set(DataQueries.ENTITIES, entities).set(DataQueries.LOCATION, location).set(DataQueries.AMOUNT, amount)
+		String location = this.location.getExtent().getName() + "." + this.location.getBlockX() + "." + this.location.getBlockY() + "." + this.location.getBlockZ();
+        List<String> entities = new ArrayList<>();
+        
+        for(EntityType type : this.entities) {
+        	entities.add(type.getId());
+        }
+        
+		return new MemoryDataContainer().set(DataQueries.ENTITIES, entities).set(DataQueries.LOCATION, location).set(DataQueries.AMOUNT, amount)
         		.set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable);
     }
 }

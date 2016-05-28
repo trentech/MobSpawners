@@ -3,7 +3,6 @@ package com.gmail.trentech.customspawners.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -42,20 +41,14 @@ public class CMDList implements CommandExecutor {
 		for(Entry<String, Spawner> entry : Spawner.all().entrySet()) {
 			String name = entry.getKey();
 			Spawner spawner = entry.getValue();
+
+			Location<World> location = spawner.getLocation();
 			
-			Optional<Location<World>> optionalLocation = spawner.getLocation();
-			
-			Text loc = Text.of(TextColors.YELLOW, "Location: ");
-			if(optionalLocation.isPresent()) {
-				Location<World> location = optionalLocation.get();
-				
-				loc = Text.join(loc, Text.of(TextColors.GREEN, "w: ", TextColors.WHITE, location.getExtent().getName(), 
-						TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(),
-						TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(),
-						TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  "));
-			}else {
-				loc = Text.join(loc, Text.of(TextColors.RED, "Not Valid"));
-			}
+			Text loc = Text.of(TextColors.YELLOW, "Location:", 
+					TextColors.GREEN, " w: ", TextColors.WHITE, location.getExtent().getName(), 
+					TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(),
+					TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(),
+					TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  ");
 			
 			Text enable = Text.of(TextColors.YELLOW, "Status: ");
 			if(spawner.isEnabled()) {

@@ -1,6 +1,6 @@
 package com.gmail.trentech.customspawners.commands;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public class CMDCreate implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		List<String> entities = Arrays.asList(args.<String>getOne("entity").get().split(","));
+		String[] ent = args.<String>getOne("entity").get().split(",");
 		
 		if(!args.hasAny("amount")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
@@ -81,7 +81,9 @@ public class CMDCreate implements CommandExecutor {
 			return CommandResult.empty();
 		}
 
-		for(String entityName : entities) {
+		List<EntityType> entities = new ArrayList<>();
+		
+		for(String entityName : ent) {
 			Optional<EntityType> optionalEntity = Main.getGame().getRegistry().getType(EntityType.class, entityName);
 			
 			if(!optionalEntity.isPresent()) {
@@ -102,6 +104,8 @@ public class CMDCreate implements CommandExecutor {
 				src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 				return CommandResult.empty();
 			}
+			
+			entities.add(entityType);
 		}
 
 		try{
@@ -147,10 +151,8 @@ public class CMDCreate implements CommandExecutor {
 		}
 		
 		Location<World> location = player.getLocation();
-		
-		String loc = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
-		
-		new Spawner(entities, loc, amount, time, radius, true).create(name);
+
+		new Spawner(entities, location, amount, time, radius, true).create(name);
 		
 		player.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner created"));
 

@@ -94,13 +94,7 @@ public class Main {
 	}
 	
 	public static void spawn(String name, Spawner spawner){
-		Optional<Location<World>> optionalLocation = spawner.getLocation();
-		
-		if(!optionalLocation.isPresent()) {
-			getLog().error("Cannot create spawner scheduler. Location error");
-			return;
-		}
-		Location<World> startLocation = optionalLocation.get();
+		Location<World> startLocation = spawner.getLocation();
 
 		List<EntityType> entities = spawner.getEntities();
 		
