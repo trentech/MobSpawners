@@ -37,7 +37,7 @@ import com.gmail.trentech.customspawners.utils.SQLUtils;
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = "CustomSpawners", repoOwner = "TrenTech", version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, authors = Resource.AUTHOR, url = Resource.URL, description = Resource.DESCRIPTION, dependencies = {@Dependency(id = "Updatifier", optional = true)})
+@Plugin(id = Resource.ID, name = Resource.NAME, authors = Resource.AUTHOR, url = Resource.URL, dependencies = {@Dependency(id = "Updatifier", optional = true)})
 public class Main {
 
 	private static Game game;
