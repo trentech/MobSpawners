@@ -24,7 +24,7 @@ repositories {
 }
 
 blossom {
-    String path = 'src/main/java/com/gmail/trentech/customspawners/Resource.java'
+    String path = 'src/main/java/com/gmail/trentech/customspawners/utils/Resource.java'
     replaceToken '@project.version@', project.version, path
 }
 
