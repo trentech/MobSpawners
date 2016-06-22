@@ -23,53 +23,46 @@ import com.gmail.trentech.customspawners.utils.Help;
 
 public class CMDList implements CommandExecutor {
 
-	public CMDList(){
+	public CMDList() {
 		Help help = new Help("list", "list", " List all spawners by name");
 		help.setSyntax(" /spawner list\n /cs l");
 		help.setExample(" /spawner list");
 		help.save();
 	}
-	
+
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
-		
+
 		pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Entities")).build());
-		
+
 		List<Text> list = new ArrayList<>();
-		
-		for(Entry<String, Spawner> entry : Spawner.all().entrySet()) {
+
+		for (Entry<String, Spawner> entry : Spawner.all().entrySet()) {
 			String name = entry.getKey();
 			Spawner spawner = entry.getValue();
 
 			Location<World> location = spawner.getLocation();
-			
-			Text loc = Text.of(TextColors.YELLOW, "Location:", 
-					TextColors.GREEN, " w: ", TextColors.WHITE, location.getExtent().getName(), 
-					TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(),
-					TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(),
-					TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  ");
-			
+
+			Text loc = Text.of(TextColors.YELLOW, "Location:", TextColors.GREEN, " w: ", TextColors.WHITE, location.getExtent().getName(), TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(), TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(), TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  ");
+
 			Text enable = Text.of(TextColors.YELLOW, "Status: ");
-			if(spawner.isEnabled()) {
+			if (spawner.isEnabled()) {
 				enable = Text.join(enable, Text.of(TextColors.GREEN, "enabled\n  "));
-			}else {
+			} else {
 				enable = Text.join(enable, Text.of(TextColors.RED, "disabled\n  "));
 			}
-			
+
 			Text ents = Text.of(TextColors.YELLOW, "Entities: \n", TextColors.WHITE);
-			for(EntityType entityType : spawner.getEntities()) {
+			for (EntityType entityType : spawner.getEntities()) {
 				ents = Text.join(ents, Text.of("  - ", entityType.getId(), "\n"));
 			}
-			
-			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, loc,
-					TextColors.YELLOW, "Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ",
-					TextColors.YELLOW, "Time: ", TextColors.WHITE, spawner.getTime(), "\n  ",
-					TextColors.YELLOW, "Radius: ", TextColors.WHITE, spawner.getRadius(), "\n  ", ents));
+
+			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, loc, TextColors.YELLOW, "Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ", TextColors.YELLOW, "Time: ", TextColors.WHITE, spawner.getTime(), "\n  ", TextColors.YELLOW, "Radius: ", TextColors.WHITE, spawner.getRadius(), "\n  ", ents));
 		}
-		
+
 		pages.contents(list);
-		
+
 		pages.sendTo(src);
 
 		return CommandResult.success();

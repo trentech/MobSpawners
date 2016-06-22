@@ -22,39 +22,35 @@ public class CMDSpawner implements CommandExecutor {
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
-		
+
 		pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Command List")).build());
-		
+
 		List<Text> list = new ArrayList<>();
 
-		if(src.hasPermission("customspawners.cmd.spawner.create")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands ")))
-					.onClick(TextActions.executeCallback(Help.getHelp("create"))).append(Text.of(" /spawner create")).build());
+		if (src.hasPermission("customspawners.cmd.spawner.create")) {
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands "))).onClick(TextActions.executeCallback(Help.getHelp("create"))).append(Text.of(" /spawner create")).build());
 		}
-		if(src.hasPermission("customspawners.cmd.spawner.remove")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands ")))
-					.onClick(TextActions.executeCallback(Help.getHelp("remove"))).append(Text.of(" /spawner remove")).build());
+		if (src.hasPermission("customspawners.cmd.spawner.remove")) {
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands "))).onClick(TextActions.executeCallback(Help.getHelp("remove"))).append(Text.of(" /spawner remove")).build());
 		}
-		if(src.hasPermission("customspawners.cmd.spawner.enable")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands ")))
-					.onClick(TextActions.executeCallback(Help.getHelp("enable"))).append(Text.of(" /spawner enable")).build());
+		if (src.hasPermission("customspawners.cmd.spawner.enable")) {
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands "))).onClick(TextActions.executeCallback(Help.getHelp("enable"))).append(Text.of(" /spawner enable")).build());
 		}
-		if(src.hasPermission("customspawners.cmd.spawner.disable")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands ")))
-					.onClick(TextActions.executeCallback(Help.getHelp("disable"))).append(Text.of(" /spawner disable")).build());
+		if (src.hasPermission("customspawners.cmd.spawner.disable")) {
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands "))).onClick(TextActions.executeCallback(Help.getHelp("disable"))).append(Text.of(" /spawner disable")).build());
 		}
-		if(src.hasPermission("customspawners.cmd.spawner.list")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands ")))
-					.onClick(TextActions.executeCallback(Help.getHelp("list"))).append(Text.of(" /spawner list")).build());
+		if (src.hasPermission("customspawners.cmd.spawner.list")) {
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands "))).onClick(TextActions.executeCallback(Help.getHelp("list"))).append(Text.of(" /spawner list")).build());
 		}
-		if(src.hasPermission("customspawners.cmd.spawner.entities")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands ")))
-					.onClick(TextActions.executeCallback(Help.getHelp("entities"))).append(Text.of(" /spawner entities")).build());
+		if (src.hasPermission("customspawners.cmd.spawner.entities")) {
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for list of sub commands "))).onClick(TextActions.executeCallback(Help.getHelp("entities"))).append(Text.of(" /spawner entities")).build());
 		}
 		pages.contents(list);
-		
+
 		pages.sendTo(src);
-		//Main.getGame().getCommandManager().process(Main.getGame().getServer().getConsole(), "give " + ((Player) src).getName() + " mob_spawner 1 0 {BlockEntityTag:{EntityId:NONE}, display:{Name:Custom Spawner}}");
+		// Main.getGame().getCommandManager().process(Main.getGame().getServer().getConsole(),
+		// "give " + ((Player) src).getName() + " mob_spawner 1 0
+		// {BlockEntityTag:{EntityId:NONE}, display:{Name:Custom Spawner}}");
 
 		return CommandResult.success();
 	}

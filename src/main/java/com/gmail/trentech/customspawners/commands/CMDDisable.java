@@ -15,29 +15,29 @@ import com.gmail.trentech.customspawners.utils.Help;
 
 public class CMDDisable implements CommandExecutor {
 
-	public CMDDisable(){
+	public CMDDisable() {
 		Help help = new Help("disable", "disable", " Disable spawner based on the name it was created");
 		help.setSyntax(" /spawner disable <name>\n /cs d <name>");
 		help.setExample(" /spawner disable MySpawner");
 		help.save();
 	}
-	
+
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if(!args.hasAny("name")) {
+		if (!args.hasAny("name")) {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner disable <name>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String>getOne("name").get();
+		String name = args.<String> getOne("name").get();
 
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
-		
-		if(!optionalSpawner.isPresent()) {
+
+		if (!optionalSpawner.isPresent()) {
 			src.sendMessage(Text.of(TextColors.RED, name, " does not exist"));
 			return CommandResult.empty();
 		}
 		Spawner spawner = optionalSpawner.get();
-		
+
 		spawner.setEnabled(false);
 		spawner.update(name);
 

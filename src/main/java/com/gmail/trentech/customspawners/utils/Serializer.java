@@ -17,20 +17,20 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class Serializer {
-	
+
 	public static String serialize(Spawner spawner) {
 		ConfigurationNode node = ConfigurateTranslator.instance().translateData(spawner.toContainer());
-		
+
 		StringWriter stringWriter = new StringWriter();
 		try {
-		    HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
 		} catch (IOException e) {
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		return stringWriter.toString();
 	}
-	
+
 	public static Spawner deserialize(String item) {
 		ConfigurationNode node = null;
 		try {
@@ -38,12 +38,12 @@ public class Serializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-	    ConfigurateTranslator translator = ConfigurateTranslator.instance();
-	    DataManager manager = Main.getGame().getDataManager();
+
+		ConfigurateTranslator translator = ConfigurateTranslator.instance();
+		DataManager manager = Main.getGame().getDataManager();
 
 		DataView dataView = translator.translateFrom(node);
-		
-	    return manager.deserialize(Spawner.class, dataView).get();
+
+		return manager.deserialize(Spawner.class, dataView).get();
 	}
 }

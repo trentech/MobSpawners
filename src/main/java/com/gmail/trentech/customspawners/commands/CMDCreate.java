@@ -24,136 +24,136 @@ import com.gmail.trentech.customspawners.utils.Help;
 
 public class CMDCreate implements CommandExecutor {
 
-	public CMDCreate(){
+	public CMDCreate() {
 		Help help = new Help("create", "create", " Use this command to create a spawner");
 		help.setSyntax(" /spawner create <name> <entity,entity...> <amount> <time> <radius>\n /cs c <name> <entity,entity...> <amount> <time> <radius>");
 		help.setExample(" /spawner create MySpawner ZOMBIE 3 10 20");
 		help.save();
 	}
-	
+
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if(!(src instanceof Player)){
+		if (!(src instanceof Player)) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, "Must be a player"));
 			return CommandResult.empty();
 		}
 		Player player = (Player) src;
 
-		if(!args.hasAny("name")) {
+		if (!args.hasAny("name")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String>getOne("name").get();
+		String name = args.<String> getOne("name").get();
 
-		if(!args.hasAny("entity")) {
+		if (!args.hasAny("entity")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		String[] ent = args.<String>getOne("entity").get().split(",");
-		
-		if(!args.hasAny("amount")) {
+		String[] ent = args.<String> getOne("entity").get().split(",");
+
+		if (!args.hasAny("amount")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
 		int amount;
-		
-		if(!args.hasAny("time")) {
+
+		if (!args.hasAny("time")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
 		int time;
-		
-		if(!args.hasAny("radius")) {
+
+		if (!args.hasAny("radius")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
 		int radius;
-		
+
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
-		
-		if(optionalSpawner.isPresent()) {
+
+		if (optionalSpawner.isPresent()) {
 			src.sendMessage(Text.of(TextColors.RED, name, " already exists"));
 			return CommandResult.empty();
 		}
 
 		List<EntityType> entities = new ArrayList<>();
-		
-		for(String entityName : ent) {
+
+		for (String entityName : ent) {
 			Optional<EntityType> optionalEntity = Main.getGame().getRegistry().getType(EntityType.class, entityName);
-			
-			if(!optionalEntity.isPresent()) {
+
+			if (!optionalEntity.isPresent()) {
 				src.sendMessage(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"));
 				src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 				return CommandResult.empty();
 			}
 			EntityType entityType = optionalEntity.get();
-			
-			if(!Living.class.isAssignableFrom(entityType.getEntityClass())) {	
+
+			if (!Living.class.isAssignableFrom(entityType.getEntityClass())) {
 				src.sendMessage(Text.of(TextColors.RED, "<entity> Not a valid entity"));
 				src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 				return CommandResult.empty();
 			}
-			
-			if(entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN) || entityType.equals(EntityTypes.PLAYER)) {
+
+			if (entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN) || entityType.equals(EntityTypes.PLAYER)) {
 				src.sendMessage(Text.of(TextColors.RED, "<entity> Not a valid entity"));
 				src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 				return CommandResult.empty();
 			}
-			
+
 			entities.add(entityType);
 		}
 
-		try{
-			amount = Integer.parseInt(args.<String>getOne("amount").get());
-		}catch(Exception e) {
+		try {
+			amount = Integer.parseInt(args.<String> getOne("amount").get());
+		} catch (Exception e) {
 			src.sendMessage(Text.of(TextColors.RED, "<amount> Not a valid number"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		
-		if(amount <= 0) {
+
+		if (amount <= 0) {
 			src.sendMessage(Text.of(TextColors.RED, "<amount> Must be greater than 0"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
 
-		try{
-			time = Integer.parseInt(args.<String>getOne("time").get());
-		}catch(Exception e) {
+		try {
+			time = Integer.parseInt(args.<String> getOne("time").get());
+		} catch (Exception e) {
 			src.sendMessage(Text.of(TextColors.RED, "<time> Not a valid number"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		
-		if(time <= 0) {
+
+		if (time <= 0) {
 			src.sendMessage(Text.of(TextColors.RED, "<time> Must be greater than 0"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
 
-		try{
-			radius = Integer.parseInt(args.<String>getOne("radius").get());
-		}catch(Exception e) {
+		try {
+			radius = Integer.parseInt(args.<String> getOne("radius").get());
+		} catch (Exception e) {
 			src.sendMessage(Text.of(TextColors.RED, "<radius> Not a valid number"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
 
-		if(radius <= 0) {
+		if (radius <= 0) {
 			src.sendMessage(Text.of(TextColors.RED, "<radius> Must be greater than 0"));
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		
+
 		Location<World> location = player.getLocation();
 
 		new Spawner(entities, location, amount, time, radius, true).create(name);
-		
+
 		player.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner created"));
 
 		return CommandResult.success();

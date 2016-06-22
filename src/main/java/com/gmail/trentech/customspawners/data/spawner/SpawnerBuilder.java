@@ -22,39 +22,39 @@ import com.gmail.trentech.customspawners.Main;
 
 public class SpawnerBuilder extends AbstractDataBuilder<Spawner> {
 
-    public SpawnerBuilder() {
-        super(Spawner.class, 2);
-    }
+	public SpawnerBuilder() {
+		super(Spawner.class, 2);
+	}
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Override
-    protected Optional<Spawner> buildContent(DataView container) throws InvalidDataException {
-        if (container.contains(ENTITIES, LOCATION, AMOUNT, TIME, RANGE, ENABLE)) {
+	protected Optional<Spawner> buildContent(DataView container) throws InvalidDataException {
+		if (container.contains(ENTITIES, LOCATION, AMOUNT, TIME, RANGE, ENABLE)) {
 			List<EntityType> entities = new ArrayList<>();
-        	
-			for(String entity : (List<String>) container.getList(ENTITIES).get()) {
+
+			for (String entity : (List<String>) container.getList(ENTITIES).get()) {
 				entities.add(Main.getGame().getRegistry().getType(EntityType.class, entity).get());
 			}
 
 			String[] args = container.getString(LOCATION).get().split(".");
-			
+
 			Optional<World> optionalWorld = Main.getGame().getServer().getWorld(args[0]);
-			
-			if(!optionalWorld.isPresent()) {
+
+			if (!optionalWorld.isPresent()) {
 				return Optional.empty();
 			}
 			World world = optionalWorld.get();
 
 			Location<World> location = new Location<World>(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
 
-        	int amount = container.getInt(AMOUNT).get();
-        	int time = container.getInt(TIME).get();
-        	int range = container.getInt(RANGE).get();
-        	boolean enable = container.getBoolean(ENABLE).get();
-        	
-            return Optional.of(new Spawner(entities, location, amount, time, range, enable));
-        }
-        
-        return Optional.empty();
-    }
+			int amount = container.getInt(AMOUNT).get();
+			int time = container.getInt(TIME).get();
+			int range = container.getInt(RANGE).get();
+			boolean enable = container.getBoolean(ENABLE).get();
+
+			return Optional.of(new Spawner(entities, location, amount, time, range, enable));
+		}
+
+		return Optional.empty();
+	}
 }
