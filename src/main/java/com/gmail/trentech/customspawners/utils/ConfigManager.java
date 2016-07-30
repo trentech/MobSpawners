@@ -16,7 +16,7 @@ public class ConfigManager {
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 
 	public ConfigManager(String folder, String configName) {
-		folder = "config" + File.separator + "customspawners" + File.separator + folder;
+		folder = "config" + File.separator + Resource.ID + File.separator + folder;
 		if (!new File(folder).isDirectory()) {
 			new File(folder).mkdirs();
 		}
@@ -27,7 +27,7 @@ public class ConfigManager {
 	}
 
 	public ConfigManager(String configName) {
-		String folder = "config" + File.separator + "customspawners";
+		String folder = "config" + File.separator + Resource.ID;
 		if (!new File(folder).isDirectory()) {
 			new File(folder).mkdirs();
 		}
@@ -38,7 +38,7 @@ public class ConfigManager {
 	}
 
 	public ConfigManager() {
-		String folder = "config" + File.separator + "customspawners";
+		String folder = "config" + File.separator + Resource.ID;
 		if (!new File(folder).isDirectory()) {
 			new File(folder).mkdirs();
 		}
