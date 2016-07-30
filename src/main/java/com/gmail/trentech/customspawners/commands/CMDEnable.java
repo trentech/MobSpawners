@@ -28,7 +28,7 @@ public class CMDEnable implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner enable <name>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String> getOne("name").get();
+		String name = args.<String> getOne("name").get().toLowerCase();
 
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
 
@@ -39,7 +39,7 @@ public class CMDEnable implements CommandExecutor {
 		Spawner spawner = optionalSpawner.get();
 
 		spawner.setEnabled(true);
-		spawner.update(name);
+		spawner.update();
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner enabled"));
 

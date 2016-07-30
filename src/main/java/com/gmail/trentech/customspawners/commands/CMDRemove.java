@@ -28,7 +28,7 @@ public class CMDRemove implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner remove <name>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String> getOne("name").get();
+		String name = args.<String> getOne("name").get().toLowerCase();
 
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
 
@@ -37,7 +37,7 @@ public class CMDRemove implements CommandExecutor {
 			return CommandResult.empty();
 		}
 		Spawner spawner = optionalSpawner.get();
-		spawner.remove(name);
+		spawner.remove();
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner removed"));
 

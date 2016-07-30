@@ -1,5 +1,6 @@
 package com.gmail.trentech.customspawners.data.spawner;
 
+import static com.gmail.trentech.customspawners.data.DataQueries.NAME;
 import static com.gmail.trentech.customspawners.data.DataQueries.AMOUNT;
 import static com.gmail.trentech.customspawners.data.DataQueries.ENABLE;
 import static com.gmail.trentech.customspawners.data.DataQueries.ENTITIES;
@@ -29,14 +30,16 @@ public class SpawnerBuilder extends AbstractDataBuilder<Spawner> {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Optional<Spawner> buildContent(DataView container) throws InvalidDataException {
-		if (container.contains(ENTITIES, LOCATION, AMOUNT, TIME, RANGE, ENABLE)) {
+		if (container.contains(NAME, ENTITIES, LOCATION, AMOUNT, TIME, RANGE, ENABLE)) {
+			String name = container.getString(NAME).get();
+			
 			List<EntityType> entities = new ArrayList<>();
 
 			for (String entity : (List<String>) container.getList(ENTITIES).get()) {
 				entities.add(Main.getGame().getRegistry().getType(EntityType.class, entity).get());
 			}
 
-			String[] args = container.getString(LOCATION).get().split(".");
+			String[] args = container.getString(LOCATION).get().split("\\.");
 
 			Optional<World> optionalWorld = Main.getGame().getServer().getWorld(args[0]);
 
@@ -52,7 +55,7 @@ public class SpawnerBuilder extends AbstractDataBuilder<Spawner> {
 			int range = container.getInt(RANGE).get();
 			boolean enable = container.getBoolean(ENABLE).get();
 
-			return Optional.of(new Spawner(entities, location, amount, time, range, enable));
+			return Optional.of(new Spawner(name, entities, location, amount, time, range, enable));
 		}
 
 		return Optional.empty();

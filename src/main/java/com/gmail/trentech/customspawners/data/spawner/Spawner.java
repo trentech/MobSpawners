@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 	private static ConcurrentHashMap<String, Spawner> cache = new ConcurrentHashMap<>();
 
+	protected String name;
 	protected List<EntityType> entities;
 	protected Location<World> location;
 	protected int amount;
@@ -33,13 +35,18 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	protected int radius;
 	protected boolean enable;
 
-	public Spawner(List<EntityType> entities, Location<World> location, int amount, int time, int radius, boolean enable) {
+	public Spawner(String name, List<EntityType> entities, Location<World> location, int amount, int time, int radius, boolean enable) {
+		this.name = name;
 		this.entities = entities;
 		this.location = location;
 		this.amount = amount;
 		this.time = time;
 		this.radius = radius;
 		this.enable = enable;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public List<EntityType> getEntities() {
@@ -93,18 +100,30 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	}
 
 	public static Optional<Spawner> get(String name) {
-		if (cache.containsKey(name)) {
-			return Optional.of(cache.get(name));
+		if (all().containsKey(name)) {
+			return Optional.of(all().get(name));
 		}
 
 		return Optional.empty();
 	}
 
+	public static Optional<Spawner> get(Location<World> location) {
+		for(Entry<String, Spawner> entry : all().entrySet()) {
+			Spawner spawner = entry.getValue();
+
+			if(location.getPosition().equals(spawner.getLocation().getPosition())) {
+				return Optional.of(spawner);
+			}
+		}
+		
+		return Optional.empty();
+	}
+	
 	public static ConcurrentHashMap<String, Spawner> all() {
 		return cache;
 	}
 
-	public void create(String name) {
+	public void create() {
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -119,13 +138,19 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 			cache.put(name, this);
 
-			Main.spawn(name, this);
+			Main.spawn(this);
+
+			//location.setBlock(BlockTypes.MOB_SPAWNER.getDefaultState());			
+			//location.remove(MobSpawnerData.class);
+			
+			String command = "setblock " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + " mob_spawner 1 0 {BlockEntityTag:{EntityId:NONE}, display:{Name:Custom Spawner}}";		
+			Main.getGame().getCommandManager().process(Main.getGame().getServer().getConsole(), command);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void update(String name) {
+	public void update() {
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -148,14 +173,14 @@ public class Spawner extends SQLUtils implements DataSerializable {
 			}
 
 			if (isEnabled()) {
-				Main.spawn(name, this);
+				Main.spawn(this);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void remove(String name) {
+	public void remove() {
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -174,6 +199,8 @@ public class Spawner extends SQLUtils implements DataSerializable {
 					break;
 				}
 			}
+			
+			//location.setBlock(BlockTypes.AIR.getDefaultState());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -194,7 +221,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 				cache.put(name, spawner);
 
 				if (spawner.isEnabled()) {
-					Main.spawn(name, spawner);
+					Main.spawn(spawner);
 				}
 			}
 
@@ -206,7 +233,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 	@Override
 	public int getContentVersion() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -218,6 +245,6 @@ public class Spawner extends SQLUtils implements DataSerializable {
 			entities.add(type.getId());
 		}
 
-		return new MemoryDataContainer().set(DataQueries.ENTITIES, entities).set(DataQueries.LOCATION, location).set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable);
+		return new MemoryDataContainer().set(DataQueries.NAME, name).set(DataQueries.ENTITIES, entities).set(DataQueries.LOCATION, location).set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable);
 	}
 }

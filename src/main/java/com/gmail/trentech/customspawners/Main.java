@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -59,6 +60,7 @@ public class Main {
 		ConfigManager configManager = new ConfigManager();
 		configManager.init();
 
+		//getGame().getEventManager().registerListeners(this, new EventManager());
 		getGame().getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
 		getGame().getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "cs");
 
@@ -82,31 +84,28 @@ public class Main {
 		return plugin;
 	}
 
-	public static void spawn(String name, Spawner spawner) {
-		Location<World> startLocation = spawner.getLocation();
+	public static void spawn(Spawner spawner) {
+		AtomicReference<Location<World>> location = new AtomicReference<>(spawner.getLocation());
 
 		List<EntityType> entities = spawner.getEntities();
 
-		Main.getGame().getScheduler().createTaskBuilder().interval(spawner.getTime(), TimeUnit.SECONDS).name(name).execute(t -> {
+		Main.getGame().getScheduler().createTaskBuilder().interval(spawner.getTime(), TimeUnit.SECONDS).name(spawner.getName()).execute(t -> {
 			for (int i = 0; i < spawner.getAmount(); i++) {
-				Location<World> location = startLocation;
 
-				if (spawner.getRadius() > 1) {
-					location = getRandomLocation(startLocation, spawner.getRadius());
-				}
+				location.set(getRandomLocation(location.get(), spawner.getRadius()));
 
 				EntityType entityType = entities.get(random.nextInt(entities.size()));
 
-				Optional<Entity> optionalEntity = location.getExtent().createEntity(entityType, location.getPosition());
+				Optional<Entity> optionalEntity = location.get().getExtent().createEntity(entityType, location.get().getPosition());
 
 				if (optionalEntity.isPresent()) {
 					Entity entity = optionalEntity.get();
 
-					location.getExtent().spawnEntity(entity, Cause.of(NamedCause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())));
+					location.get().getExtent().spawnEntity(entity, Cause.of(NamedCause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())));
 
 					for (int x = 0; x < 9; x++) {
-						location.getExtent().spawnParticles(particle, location.getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
-						location.getExtent().spawnParticles(particle, location.getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
+						location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
+						location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
 					}
 				}
 			}

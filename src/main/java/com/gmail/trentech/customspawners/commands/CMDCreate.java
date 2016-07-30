@@ -15,6 +15,8 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.blockray.BlockRay;
+import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -44,7 +46,7 @@ public class CMDCreate implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String> getOne("name").get();
+		String name = args.<String> getOne("name").get().toLowerCase();
 
 		if (!args.hasAny("entity")) {
 			src.sendMessage(Text.of(TextColors.RED, "Not enough arguments"));
@@ -150,9 +152,18 @@ public class CMDCreate implements CommandExecutor {
 			return CommandResult.empty();
 		}
 
-		Location<World> location = player.getLocation();
-
-		new Spawner(entities, location, amount, time, radius, true).create(name);
+		BlockRay<World> blockRay = BlockRay.from(player).blockLimit(16).filter(BlockRay.onlyAirFilter()).build();
+		
+		Optional<BlockRayHit<World>> optionalHit = blockRay.end();
+		
+		if(!optionalHit.isPresent()) {
+			src.sendMessage(Text.of(TextColors.RED, "Must be looking at a block"));
+			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner create <name> <entity,entity...> <amount> <time> <radius>"));
+			return CommandResult.empty();
+		}
+		Location<World> location = optionalHit.get().getLocation();
+		
+		new Spawner(name, entities, location, amount, time, radius, true).create();
 
 		player.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner created"));
 
