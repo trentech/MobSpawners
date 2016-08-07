@@ -96,17 +96,13 @@ public class Main {
 
 				EntityType entityType = entities.get(random.nextInt(entities.size()));
 
-				Optional<Entity> optionalEntity = location.get().getExtent().createEntity(entityType, location.get().getPosition());
+				Entity entity = location.get().getExtent().createEntity(entityType, location.get().getPosition());
 
-				if (optionalEntity.isPresent()) {
-					Entity entity = optionalEntity.get();
+				location.get().getExtent().spawnEntity(entity, Cause.of(NamedCause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())));
 
-					location.get().getExtent().spawnEntity(entity, Cause.of(NamedCause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())));
-
-					for (int x = 0; x < 9; x++) {
-						location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
-						location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
-					}
+				for (int x = 0; x < 9; x++) {
+					location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
+					location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
 				}
 			}
 		}).submit(Main.getPlugin());
