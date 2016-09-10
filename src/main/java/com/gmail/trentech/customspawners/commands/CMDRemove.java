@@ -24,17 +24,12 @@ public class CMDRemove implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!args.hasAny("name")) {
-			src.sendMessage(Text.of(TextColors.YELLOW, "/spawner remove <name>"));
-			return CommandResult.empty();
-		}
 		String name = args.<String> getOne("name").get().toLowerCase();
 
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
 
 		if (!optionalSpawner.isPresent()) {
-			src.sendMessage(Text.of(TextColors.RED, name, " does not exist"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
 		}
 		Spawner spawner = optionalSpawner.get();
 		spawner.remove();

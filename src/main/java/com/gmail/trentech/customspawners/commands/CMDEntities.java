@@ -3,6 +3,7 @@ package com.gmail.trentech.customspawners.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -11,12 +12,11 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
-import org.spongepowered.api.service.pagination.PaginationService;
-import org.spongepowered.api.service.pagination.PaginationList.Builder;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.customspawners.Main;
 import com.gmail.trentech.customspawners.utils.Help;
 
 public class CMDEntities implements CommandExecutor {
@@ -30,13 +30,9 @@ public class CMDEntities implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
-
-		pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Entities")).build());
-
 		List<Text> list = new ArrayList<>();
 
-		for (EntityType entityType : Main.getGame().getRegistry().getAllOf(EntityType.class)) {
+		for (EntityType entityType : Sponge.getRegistry().getAllOf(EntityType.class)) {
 			if (!Living.class.isAssignableFrom(entityType.getEntityClass())) {
 				continue;
 			}
@@ -47,9 +43,19 @@ public class CMDEntities implements CommandExecutor {
 			list.add(Text.of(TextColors.GREEN, entityType.getId()));
 		}
 
-		pages.contents(list);
+		if (src instanceof Player) {
+			PaginationList.Builder pages = PaginationList.builder();
 
-		pages.sendTo(src);
+			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Entities")).build());
+
+			pages.contents(list);
+
+			pages.sendTo(src);
+		} else {
+			for (Text text : list) {
+				src.sendMessage(text);
+			}
+		}
 
 		return CommandResult.success();
 	}

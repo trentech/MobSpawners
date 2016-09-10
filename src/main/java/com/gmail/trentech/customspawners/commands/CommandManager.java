@@ -9,27 +9,27 @@ public class CommandManager {
 	private CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("customspawners.cmd.spawner.create")
 		    .arguments()
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("name"))), GenericArguments.optional(GenericArguments.string(Text.of("entity"))),
-		    		GenericArguments.optional(GenericArguments.string(Text.of("amount"))), GenericArguments.optional(GenericArguments.string(Text.of("time"))),
-		    		GenericArguments.optional(GenericArguments.string(Text.of("radius"))))
+		    .arguments(GenericArguments.string(Text.of("name")), GenericArguments.string(Text.of("entity,entity...")),
+		    		GenericArguments.integer(Text.of("amount")), GenericArguments.string(Text.of("time")),
+		    		GenericArguments.string(Text.of("radius")))
 		    .executor(new CMDCreate())
 		    .build();
 	
 	private CommandSpec cmdRemove = CommandSpec.builder()
 		    .permission("customspawners.cmd.spawner.remove")
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+		    .arguments(GenericArguments.string(Text.of("name")))
 		    .executor(new CMDRemove())
 		    .build();
 	
 	private CommandSpec cmdEnable = CommandSpec.builder()
 		    .permission("customspawners.cmd.spawner.enable")
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+		    .arguments(GenericArguments.string(Text.of("name")))
 		    .executor(new CMDEnable())
 		    .build();
 	
 	private CommandSpec cmdDisable = CommandSpec.builder()
 		    .permission("customspawners.cmd.spawner.disable")
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+		    .arguments(GenericArguments.string(Text.of("name")))
 		    .executor(new CMDDisable())
 		    .build();
 	

@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
@@ -31,9 +30,9 @@ import org.spongepowered.api.world.World;
 import com.gmail.trentech.customspawners.commands.CommandManager;
 import com.gmail.trentech.customspawners.data.spawner.Spawner;
 import com.gmail.trentech.customspawners.data.spawner.SpawnerBuilder;
-import com.gmail.trentech.customspawners.utils.ConfigManager;
 import com.gmail.trentech.customspawners.utils.Resource;
 import com.gmail.trentech.customspawners.utils.SQLUtils;
+import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
 
@@ -41,28 +40,27 @@ import me.flibio.updatifier.Updatifier;
 @Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true) })
 public class Main {
 
-	private static Game game;
-	private static Logger log;
+	
+	
+	@Inject
+	private Logger log;
+	private ThreadLocalRandom random = ThreadLocalRandom.current();
+	private ParticleEffect particle = ParticleEffect.builder().type(ParticleTypes.FLAME).build();
+	
 	private static PluginContainer plugin;
-
-	private static ThreadLocalRandom random = ThreadLocalRandom.current();
-	private static ParticleEffect particle = ParticleEffect.builder().type(ParticleTypes.FLAME).build();
-
+	private static Main instance;
+	
 	@Listener
-	public void onPreInitialization(GamePreInitializationEvent event) {
-		game = Sponge.getGame();
-		plugin = getGame().getPluginManager().getPlugin(Resource.ID).get();
-		log = getPlugin().getLogger();
+	public void onPreInitializationEvent(GamePreInitializationEvent event) {
+		plugin = Sponge.getPluginManager().getPlugin(Resource.ID).get();
+		instance = this;
 	}
 
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
-		ConfigManager configManager = new ConfigManager();
-		configManager.init();
-
-		//getGame().getEventManager().registerListeners(this, new EventManager());
-		getGame().getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
-		getGame().getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "cs");
+		//Sponge.getEventManager().registerListeners(this, new EventManager());
+		Sponge.getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
+		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "cs");
 
 		SQLUtils.createTables();
 	}
@@ -72,24 +70,24 @@ public class Main {
 		Spawner.init();
 	}
 
-	public static Logger getLog() {
+	public Logger getLog() {
 		return log;
-	}
-
-	public static Game getGame() {
-		return game;
 	}
 
 	public static PluginContainer getPlugin() {
 		return plugin;
 	}
 
-	public static void spawn(Spawner spawner) {
+	public static Main instance() {
+		return instance;
+	}
+	
+	public void spawn(Spawner spawner) {
 		AtomicReference<Location<World>> location = new AtomicReference<>(spawner.getLocation());
 
 		List<EntityType> entities = spawner.getEntities();
 
-		Main.getGame().getScheduler().createTaskBuilder().interval(spawner.getTime(), TimeUnit.SECONDS).name(spawner.getName()).execute(t -> {
+		Sponge.getScheduler().createTaskBuilder().interval(spawner.getTime(), TimeUnit.SECONDS).name(spawner.getName()).execute(t -> {
 			for (int i = 0; i < spawner.getAmount(); i++) {
 
 				location.set(getRandomLocation(location.get(), spawner.getRadius()));
@@ -105,11 +103,11 @@ public class Main {
 					location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
 				}
 			}
-		}).submit(Main.getPlugin());
+		}).submit(getPlugin());
 	}
 
-	private static Location<World> getRandomLocation(Location<World> location, int radius) {
-		TeleportHelper teleportHelper = Main.getGame().getTeleportHelper();
+	private Location<World> getRandomLocation(Location<World> location, int radius) {
+		TeleportHelper teleportHelper = Sponge.getGame().getTeleportHelper();
 
 		for (int i = 0; i < 19; i++) {
 			int x = (random.nextInt(radius * 2) - radius) + location.getBlockX();

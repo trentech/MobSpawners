@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.MemoryDataContainer;
@@ -138,13 +139,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 			cache.put(name, this);
 
-			Main.spawn(this);
-
-			//location.setBlock(BlockTypes.MOB_SPAWNER.getDefaultState());			
-			//location.remove(MobSpawnerData.class);
-			
-			String command = "setblock " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + " mob_spawner 1 0 {BlockEntityTag:{EntityId:NONE}, display:{Name:Custom Spawner}}";		
-			Main.getGame().getCommandManager().process(Main.getGame().getServer().getConsole(), command);
+			Main.instance().spawn(this);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -165,7 +160,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 			cache.put(name, this);
 
-			for (Task task : Main.getGame().getScheduler().getScheduledTasks()) {
+			for (Task task : Sponge.getScheduler().getScheduledTasks()) {
 				if (task.getName().equals(name)) {
 					task.cancel();
 					break;
@@ -173,7 +168,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 			}
 
 			if (isEnabled()) {
-				Main.spawn(this);
+				Main.instance().spawn(this);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -193,14 +188,12 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 			cache.remove(name);
 
-			for (Task task : Main.getGame().getScheduler().getScheduledTasks()) {
+			for (Task task : Sponge.getScheduler().getScheduledTasks()) {
 				if (task.getName().equals(name)) {
 					task.cancel();
 					break;
 				}
 			}
-			
-			//location.setBlock(BlockTypes.AIR.getDefaultState());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -221,7 +214,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 				cache.put(name, spawner);
 
 				if (spawner.isEnabled()) {
-					Main.spawn(spawner);
+					Main.instance().spawn(spawner);
 				}
 			}
 

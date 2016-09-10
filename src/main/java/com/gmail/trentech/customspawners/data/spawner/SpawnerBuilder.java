@@ -1,10 +1,10 @@
 package com.gmail.trentech.customspawners.data.spawner;
 
-import static com.gmail.trentech.customspawners.data.DataQueries.NAME;
 import static com.gmail.trentech.customspawners.data.DataQueries.AMOUNT;
 import static com.gmail.trentech.customspawners.data.DataQueries.ENABLE;
 import static com.gmail.trentech.customspawners.data.DataQueries.ENTITIES;
 import static com.gmail.trentech.customspawners.data.DataQueries.LOCATION;
+import static com.gmail.trentech.customspawners.data.DataQueries.NAME;
 import static com.gmail.trentech.customspawners.data.DataQueries.RANGE;
 import static com.gmail.trentech.customspawners.data.DataQueries.TIME;
 
@@ -12,14 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-
-import com.gmail.trentech.customspawners.Main;
 
 public class SpawnerBuilder extends AbstractDataBuilder<Spawner> {
 
@@ -36,12 +35,12 @@ public class SpawnerBuilder extends AbstractDataBuilder<Spawner> {
 			List<EntityType> entities = new ArrayList<>();
 
 			for (String entity : (List<String>) container.getList(ENTITIES).get()) {
-				entities.add(Main.getGame().getRegistry().getType(EntityType.class, entity).get());
+				entities.add(Sponge.getRegistry().getType(EntityType.class, entity).get());
 			}
 
 			String[] args = container.getString(LOCATION).get().split("\\.");
 
-			Optional<World> optionalWorld = Main.getGame().getServer().getWorld(args[0]);
+			Optional<World> optionalWorld = Sponge.getServer().getWorld(args[0]);
 
 			if (!optionalWorld.isPresent()) {
 				return Optional.empty();

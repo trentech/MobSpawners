@@ -10,14 +10,13 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.EntityType;
-import org.spongepowered.api.service.pagination.PaginationList.Builder;
-import org.spongepowered.api.service.pagination.PaginationService;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.customspawners.Main;
 import com.gmail.trentech.customspawners.data.spawner.Spawner;
 import com.gmail.trentech.customspawners.utils.Help;
 
@@ -32,10 +31,6 @@ public class CMDList implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
-
-		pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Entities")).build());
-
 		List<Text> list = new ArrayList<>();
 
 		for (Entry<String, Spawner> entry : Spawner.all().entrySet()) {
@@ -61,9 +56,19 @@ public class CMDList implements CommandExecutor {
 			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, loc, TextColors.YELLOW, "Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ", TextColors.YELLOW, "Time: ", TextColors.WHITE, spawner.getTime(), "\n  ", TextColors.YELLOW, "Radius: ", TextColors.WHITE, spawner.getRadius(), "\n  ", ents));
 		}
 
-		pages.contents(list);
+		if (src instanceof Player) {
+			PaginationList.Builder pages = PaginationList.builder();
 
-		pages.sendTo(src);
+			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Spawners")).build());
+
+			pages.contents(list);
+
+			pages.sendTo(src);
+		} else {
+			for (Text text : list) {
+				src.sendMessage(text);
+			}
+		}
 
 		return CommandResult.success();
 	}
