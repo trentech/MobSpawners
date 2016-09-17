@@ -28,6 +28,7 @@ public class CMDCreate implements CommandExecutor {
 
 	public CMDCreate() {
 		Help help = new Help("create", "create", " Use this command to create a spawner");
+		help.setPermission("customspawners.cmd.spawner.create");
 		help.setSyntax(" /spawner create <name> <entity,entity...> <amount> <time> <radius>\n /cs c <name> <entity,entity...> <amount> <time> <radius>");
 		help.setExample(" /spawner create MySpawner ZOMBIE 3 10 20");
 		help.save();
@@ -42,30 +43,30 @@ public class CMDCreate implements CommandExecutor {
 
 		String name = args.<String> getOne("name").get().toLowerCase();
 
-		String[] ent = args.<String> getOne("entity").get().split(",");
+		String[] ent = args.<String> getOne("entity,entity...").get().split(",");
 
 		int amount = args.<Integer> getOne("amount").get();
 		
 		if (amount <= 0) {
-			throw new CommandException(Text.of(TextColors.RED, "<amount> Must be greater than 0"));
+			throw new CommandException(Text.of(TextColors.RED, "<amount> Must be greater than 0"), false);
 		}
 		
 		int time = args.<Integer> getOne("time").get();
 		
 		if (time <= 0) {
-			throw new CommandException(Text.of(TextColors.RED, "<time> Must be greater than 0"));
+			throw new CommandException(Text.of(TextColors.RED, "<time> Must be greater than 0"), false);
 		}
 		
 		int radius = args.<Integer> getOne("radius").get();
 
 		if (radius <= 0) {
-			throw new CommandException(Text.of(TextColors.RED, "<radius> Must be greater than 0"));
+			throw new CommandException(Text.of(TextColors.RED, "<radius> Must be greater than 0"), false);
 		}
 		
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
 
 		if (optionalSpawner.isPresent()) {
-			throw new CommandException(Text.of(TextColors.RED, name, " already exists"));
+			throw new CommandException(Text.of(TextColors.RED, name, " already exists"), false);
 		}
 
 		List<EntityType> entities = new ArrayList<>();
@@ -74,16 +75,16 @@ public class CMDCreate implements CommandExecutor {
 			Optional<EntityType> optionalEntity = Sponge.getRegistry().getType(EntityType.class, entityName);
 
 			if (!optionalEntity.isPresent()) {
-				throw new CommandException(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"));
+				throw new CommandException(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"), false);
 			}
 			EntityType entityType = optionalEntity.get();
 
 			if (!Living.class.isAssignableFrom(entityType.getEntityClass())) {
-				throw new CommandException(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"));
+				throw new CommandException(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"), false);
 			}
 
 			if (entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN) || entityType.equals(EntityTypes.PLAYER)) {
-				throw new CommandException(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"));
+				throw new CommandException(Text.of(TextColors.RED, "<entity,entity...> Not a valid entity"), false);
 			}
 
 			entities.add(entityType);
@@ -94,7 +95,7 @@ public class CMDCreate implements CommandExecutor {
 		Optional<BlockRayHit<World>> optionalHit = blockRay.end();
 		
 		if(!optionalHit.isPresent()) {
-			throw new CommandException(Text.of(TextColors.RED, "Must be looking at a block"));
+			throw new CommandException(Text.of(TextColors.RED, "Must be looking at a block"), false);
 		}
 		Location<World> location = optionalHit.get().getLocation();
 		

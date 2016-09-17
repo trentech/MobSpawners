@@ -23,6 +23,7 @@ public class CMDEntities implements CommandExecutor {
 
 	public CMDEntities() {
 		Help help = new Help("entities", "entities", " List all available entities");
+		help.setPermission("customspawners.cmd.spawner.entities");
 		help.setSyntax(" /spawner entities\n /cs ent");
 		help.setExample(" /spawner entities");
 		help.save();

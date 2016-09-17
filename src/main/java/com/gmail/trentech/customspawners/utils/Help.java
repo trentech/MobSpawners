@@ -2,12 +2,16 @@ package com.gmail.trentech.customspawners.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
-import org.spongepowered.api.service.pagination.PaginationList.Builder;
+import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -16,10 +20,11 @@ public class Help {
 	private final String id;
 	private final String command;
 	private final String description;
+	private Optional<String> permission = Optional.empty();
 	private Optional<String> syntax = Optional.empty();
 	private Optional<String> example = Optional.empty();
 
-	private static List<Help> list = new ArrayList<>();
+	private static ConcurrentHashMap<String,Help> list = new ConcurrentHashMap<>();
 
 	public Help(String id, String command, String description) {
 		this.id = id;
@@ -35,6 +40,14 @@ public class Help {
 		return description;
 	}
 
+	public Optional<String> getPermission() {
+		return permission;
+	}
+	
+	public void setPermission(String permission) {
+		this.permission = Optional.of(permission);
+	}
+	
 	public Optional<String> getSyntax() {
 		return syntax;
 	}
@@ -56,37 +69,61 @@ public class Help {
 	}
 
 	public void save() {
-		list.add(this);
+		list.put(getId(), this);
 	}
 
-	public static Consumer<CommandSource> getHelp(String input) {
-		return (CommandSource src) -> {
-			for (Help help : list) {
-				if (help.getId().equalsIgnoreCase(input)) {
-					Builder pages = PaginationList.builder();
-					pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, help.getCommand().toLowerCase())).build());
+	public void execute(CommandSource src) {
+		List<Text> list = new ArrayList<>();
 
-					List<Text> list = new ArrayList<>();
+		list.add(Text.of(TextColors.GREEN, "Description:"));
+		list.add(Text.of(TextColors.WHITE, getDescription()));
 
-					list.add(Text.of(TextColors.GREEN, "Description:"));
-					list.add(Text.of(TextColors.WHITE, help.getDescription()));
+		if (getPermission().isPresent()) {
+			list.add(Text.of(TextColors.GREEN, "Permission:"));
+			list.add(Text.of(TextColors.WHITE, " ", getPermission().get()));
+		}
+		if (getSyntax().isPresent()) {
+			list.add(Text.of(TextColors.GREEN, "Syntax:"));
+			list.add(Text.of(TextColors.WHITE, getSyntax().get()));
+		}
+		if (getExample().isPresent()) {
+			list.add(Text.of(TextColors.GREEN, "Example:"));
+			list.add(Text.of(TextColors.WHITE, getExample().get(), TextColors.DARK_GREEN));
+		}
 
-					if (help.getSyntax().isPresent()) {
-						list.add(Text.of(TextColors.GREEN, "Syntax:"));
-						list.add(Text.of(TextColors.WHITE, help.getSyntax().get()));
-					}
-					if (help.getExample().isPresent()) {
-						list.add(Text.of(TextColors.GREEN, "Example:"));
-						list.add(Text.of(TextColors.WHITE, help.getExample().get(), TextColors.DARK_GREEN));
-					}
+		if (src instanceof Player) {
+			PaginationList.Builder pages = Sponge.getServiceManager().provide(PaginationService.class).get().builder();
 
-					pages.contents(list);
+			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, getCommand().toLowerCase())).build());
 
-					pages.sendTo(src);
-					break;
-				}
+			pages.contents(list);
+
+			pages.sendTo(src);
+		} else {
+			for (Text text : list) {
+				src.sendMessage(text);
 			}
-
+		}
+	}
+	
+	public static Optional<Help> get(String id) {
+		if(list.containsKey(id)) {
+			return Optional.of(list.get(id));
+		}
+		
+		return Optional.empty();
+	}
+	
+	public static Consumer<CommandSource> getHelp(String id) {
+		return (CommandSource src) -> {
+			if(list.containsKey(id)) {
+				Help help = list.get(id);
+				help.execute(src);
+			}
 		};
+	}
+	
+	public static Map<String, Help> all() {
+		return list;
 	}
 }

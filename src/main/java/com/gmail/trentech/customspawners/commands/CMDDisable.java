@@ -17,6 +17,7 @@ public class CMDDisable implements CommandExecutor {
 
 	public CMDDisable() {
 		Help help = new Help("disable", "disable", " Disable spawner based on the name it was created");
+		help.setPermission("customspawners.cmd.spawner.disable");
 		help.setSyntax(" /spawner disable <name>\n /cs d <name>");
 		help.setExample(" /spawner disable MySpawner");
 		help.save();
@@ -29,7 +30,7 @@ public class CMDDisable implements CommandExecutor {
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
 
 		if (!optionalSpawner.isPresent()) {
-			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
 		}
 		Spawner spawner = optionalSpawner.get();
 

@@ -4,6 +4,8 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
+import com.gmail.trentech.customspawners.utils.Help;
+
 public class CommandManager {
 	
 	private CommandSpec cmdCreate = CommandSpec.builder()
@@ -43,6 +45,13 @@ public class CommandManager {
 		    .executor(new CMDEntities())
 		    .build();
 	
+	private CommandSpec cmdHelp = CommandSpec.builder()
+		    .description(Text.of(" I need help with Custom Spawners"))
+		    .permission("customspawners.cmd.spawner")
+		    .arguments(GenericArguments.choices(Text.of("command"), Help.all()))
+		    .executor(new CMDHelp())
+		    .build();
+	
 	public CommandSpec cmdSpawner = CommandSpec.builder()
 		    .permission("customspawners.cmd.spawner")
 		    .child(cmdCreate, "create", "c")
@@ -51,6 +60,7 @@ public class CommandManager {
 		    .child(cmdDisable, "disable", "d")
 		    .child(cmdList, "list", "l")
 		    .child(cmdEntities, "entities", "ent")
+		    .child(cmdHelp, "help", "h")
 		    .executor(new CMDSpawner())
 		    .build();
 }

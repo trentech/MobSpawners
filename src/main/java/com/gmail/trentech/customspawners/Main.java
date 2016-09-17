@@ -40,8 +40,6 @@ import me.flibio.updatifier.Updatifier;
 @Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true) })
 public class Main {
 
-	
-	
 	@Inject
 	private Logger log;
 	private ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -58,7 +56,6 @@ public class Main {
 
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
-		//Sponge.getEventManager().registerListeners(this, new EventManager());
 		Sponge.getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
 		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "cs");
 

@@ -17,6 +17,7 @@ public class CMDRemove implements CommandExecutor {
 
 	public CMDRemove() {
 		Help help = new Help("remove", "remove", " Remove spawner based on the name it was created");
+		help.setPermission("customspawners.cmd.spawner.remove");
 		help.setSyntax(" /spawner remove <name>\n /cs r <name>");
 		help.setExample(" /spawner remove MySpawner");
 		help.save();
@@ -29,7 +30,7 @@ public class CMDRemove implements CommandExecutor {
 		Optional<Spawner> optionalSpawner = Spawner.get(name);
 
 		if (!optionalSpawner.isPresent()) {
-			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
 		}
 		Spawner spawner = optionalSpawner.get();
 		spawner.remove();
