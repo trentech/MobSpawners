@@ -34,6 +34,10 @@ public class CMDDisable implements CommandExecutor {
 		}
 		Spawner spawner = optionalSpawner.get();
 
+		if(!spawner.isEnabled()) {
+			throw new CommandException(Text.of(TextColors.RED, "Spawner already disabled"), false);
+		}
+		
 		spawner.setEnabled(false);
 		spawner.update();
 

@@ -29,6 +29,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	private static ConcurrentHashMap<String, Spawner> cache = new ConcurrentHashMap<>();
 
 	protected String name;
+	
 	protected List<EntityType> entities;
 	protected Location<World> location;
 	protected int amount;
@@ -124,6 +125,35 @@ public class Spawner extends SQLUtils implements DataSerializable {
 		return cache;
 	}
 
+//	public void updateClient(Player player, boolean reset) {
+//		if(location.getExtent().getChunk(location.getChunkPosition()).get().isLoaded()) {
+//			if (reset) {
+//				player.resetBlockChange(location.getBlockPosition());
+//			} else {
+//				BlockState state = BlockTypes.STAINED_GLASS.getDefaultState();
+//
+//				DyeableData dyeableData = Sponge.getDataManager().getManipulatorBuilder(DyeableData.class).get().create();
+//				dyeableData.type().set(DyeColors.BLACK);
+//
+//				state = state.with(dyeableData.asImmutable()).get();
+//				
+//				player.sendBlockChange(location.getBlockPosition(), state);
+//			}
+//		}
+//	}
+//
+//	public void update(boolean reset) {
+//		World world = location.getExtent();
+//
+//		Predicate<Entity> filter = e -> {
+//			return e.getType().equals(EntityTypes.PLAYER);
+//		};
+//
+//		for (Entity entity : world.getEntities(filter)) {
+//			updateClient((Player) entity, reset);
+//		}
+//	}
+	
 	public void create() {
 		try {
 			Connection connection = getDataSource().getConnection();
@@ -161,9 +191,8 @@ public class Spawner extends SQLUtils implements DataSerializable {
 			cache.put(name, this);
 
 			for (Task task : Sponge.getScheduler().getScheduledTasks()) {
-				if (task.getName().equals(name)) {
+				if (task.getName().startsWith("customspawners:" + name) && !task.getName().startsWith("customspawners:" + name + ":blockupdate")) {
 					task.cancel();
-					break;
 				}
 			}
 
@@ -189,9 +218,8 @@ public class Spawner extends SQLUtils implements DataSerializable {
 			cache.remove(name);
 
 			for (Task task : Sponge.getScheduler().getScheduledTasks()) {
-				if (task.getName().equals(name)) {
+				if (task.getName().startsWith("customspawners:" + name)) {
 					task.cancel();
-					break;
 				}
 			}
 		} catch (SQLException e) {

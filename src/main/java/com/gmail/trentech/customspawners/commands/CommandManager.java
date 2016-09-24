@@ -12,8 +12,8 @@ public class CommandManager {
 		    .permission("customspawners.cmd.spawner.create")
 		    .arguments()
 		    .arguments(GenericArguments.string(Text.of("name")), GenericArguments.string(Text.of("entity,entity...")),
-		    		GenericArguments.integer(Text.of("amount")), GenericArguments.string(Text.of("time")),
-		    		GenericArguments.string(Text.of("radius")))
+		    		GenericArguments.integer(Text.of("amount")), GenericArguments.integer(Text.of("time")),
+		    		GenericArguments.integer(Text.of("radius")))
 		    .executor(new CMDCreate())
 		    .build();
 	

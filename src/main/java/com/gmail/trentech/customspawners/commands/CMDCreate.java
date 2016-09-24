@@ -5,15 +5,21 @@ import java.util.List;
 import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.data.manipulator.mutable.DyeableData;
+import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.blockray.BlockRay;
@@ -21,6 +27,7 @@ import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.gmail.trentech.customspawners.Main;
 import com.gmail.trentech.customspawners.data.spawner.Spawner;
 import com.gmail.trentech.customspawners.utils.Help;
 
@@ -99,10 +106,21 @@ public class CMDCreate implements CommandExecutor {
 		}
 		Location<World> location = optionalHit.get().getLocation();
 		
-		new Spawner(name, entities, location, amount, time, radius, true).create();
+		BlockState state = BlockTypes.STAINED_GLASS.getDefaultState();
 
-		player.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner created"));
+		DyeableData dyeableData = Sponge.getDataManager().getManipulatorBuilder(DyeableData.class).get().create();
+		dyeableData.type().set(DyeColors.BLACK);
 
-		return CommandResult.success();
+		state = state.with(dyeableData.asImmutable()).get();
+		
+		if(location.setBlock(state, Cause.source(Main.getPlugin()).named(NamedCause.simulated(player)).build())) {
+			new Spawner(name, entities, location, amount, time, radius, true).create();
+
+			player.sendMessage(Text.of(TextColors.DARK_GREEN, "Spawner created"));
+			
+			return CommandResult.success();
+		}
+
+		throw new CommandException(Text.of(TextColors.RED, "Could not create spawner"), false);
 	}
 }
