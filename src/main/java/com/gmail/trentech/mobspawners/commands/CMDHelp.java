@@ -1,4 +1,4 @@
-package com.gmail.trentech.customspawners.commands;
+package com.gmail.trentech.mobspawners.commands;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -6,7 +6,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 
-import com.gmail.trentech.customspawners.utils.Help;
+import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDHelp implements CommandExecutor {
 

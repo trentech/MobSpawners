@@ -1,4 +1,4 @@
-package com.gmail.trentech.customspawners.utils;
+package com.gmail.trentech.mobspawners.utils;
 
 import java.util.ArrayList;
 import java.util.List;

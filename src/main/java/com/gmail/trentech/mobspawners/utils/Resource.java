@@ -1,4 +1,4 @@
-package com.gmail.trentech.customspawners.utils;
+package com.gmail.trentech.mobspawners.utils;
 
 public class Resource {
 

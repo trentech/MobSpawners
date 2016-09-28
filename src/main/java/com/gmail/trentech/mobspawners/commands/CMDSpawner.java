@@ -1,4 +1,4 @@
-package com.gmail.trentech.customspawners.commands;
+package com.gmail.trentech.mobspawners.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.customspawners.utils.Help;
+import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDSpawner implements CommandExecutor {
 

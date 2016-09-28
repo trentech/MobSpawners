@@ -1,4 +1,4 @@
-package com.gmail.trentech.customspawners.utils;
+package com.gmail.trentech.mobspawners.utils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +18,7 @@ public abstract class SQLUtils {
 			sql = Sponge.getServiceManager().provide(SqlService.class).get();
 		}
 
-		return sql.getDataSource("jdbc:h2:./config/customspawners/data");
+		return sql.getDataSource("jdbc:h2:./config/" + Resource.ID + "/data");
 	}
 
 	public static void createTables() {

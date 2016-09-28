@@ -1,4 +1,4 @@
-package com.gmail.trentech.customspawners.commands;
+package com.gmail.trentech.mobspawners.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,8 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.customspawners.data.spawner.Spawner;
-import com.gmail.trentech.customspawners.utils.Help;
+import com.gmail.trentech.mobspawners.data.spawner.Spawner;
+import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDList implements CommandExecutor {
 
@@ -34,11 +34,9 @@ public class CMDList implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
 
-		for (Entry<String, Spawner> entry : Spawner.all().entrySet()) {
-			String name = entry.getKey();
+		for (Entry<Location<World>, Spawner> entry : Spawner.all().entrySet()) {
+			Location<World> location = entry.getKey();
 			Spawner spawner = entry.getValue();
-
-			Location<World> location = spawner.getLocation();
 
 			Text loc = Text.of(TextColors.YELLOW, "Location:", TextColors.GREEN, " w: ", TextColors.WHITE, location.getExtent().getName(), TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(), TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(), TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  ");
 
@@ -54,7 +52,7 @@ public class CMDList implements CommandExecutor {
 				ents = Text.join(ents, Text.of("  - ", entityType.getId(), "\n"));
 			}
 
-			list.add(Text.of(TextColors.GREEN, "Name: ", TextColors.WHITE, name, "\n  ", enable, loc, TextColors.YELLOW, "Amount: ", TextColors.WHITE, spawner.getAmount(), "\n  ", TextColors.YELLOW, "Time: ", TextColors.WHITE, spawner.getTime(), "\n  ", TextColors.YELLOW, "Radius: ", TextColors.WHITE, spawner.getRadius(), "\n  ", ents));
+			list.add(Text.of(loc, enable, ents));
 		}
 
 		if (src instanceof Player) {
