@@ -33,14 +33,14 @@ public class CMDCreate implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		EntityType entity = args.<EntityType> getOne("entity").get();
+		EntityType entity = args.<EntityType>getOne("entity").get();
 
 		ItemStack itemStack = Items.getSpawner(new Spawner(entity));
 
 		player.getInventory().offer(itemStack);
 
 		EventListener.checkItemInHand(player);
-		
+
 		return CommandResult.success();
 	}
 }

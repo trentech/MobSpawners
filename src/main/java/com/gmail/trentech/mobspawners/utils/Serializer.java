@@ -20,8 +20,8 @@ public class Serializer {
 	public static String serialize(Spawner spawner) {
 		try {
 			ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(spawner.toContainer());
-			StringWriter stringWriter = new StringWriter();		
-			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);		
+			StringWriter stringWriter = new StringWriter();
+			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
 			return stringWriter.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -31,7 +31,7 @@ public class Serializer {
 
 	public static Spawner deserialize(String item) {
 		try {
-			ConfigurationNode node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();			
+			ConfigurationNode node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
 			DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 			return Sponge.getDataManager().deserialize(Spawner.class, dataView).get();
 		} catch (IOException e) {

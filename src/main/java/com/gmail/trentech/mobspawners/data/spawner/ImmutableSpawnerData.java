@@ -1,4 +1,5 @@
 package com.gmail.trentech.mobspawners.data.spawner;
+
 import static com.gmail.trentech.mobspawners.data.Keys.SPAWNER;
 
 import java.util.Optional;

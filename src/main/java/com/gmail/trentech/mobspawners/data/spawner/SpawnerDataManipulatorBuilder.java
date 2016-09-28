@@ -22,7 +22,7 @@ public class SpawnerDataManipulatorBuilder extends AbstractDataBuilder<SpawnerDa
 			return Optional.empty();
 		}
 		Spawner spawner = container.getSerializable(SPAWNER.getQuery(), Spawner.class).get();
-		
+
 		return Optional.of(new SpawnerData(spawner));
 	}
 

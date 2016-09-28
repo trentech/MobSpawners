@@ -25,17 +25,17 @@ public class Recipes {
 	public static void register() {
 		ConfigurationNode config = ConfigManager.get().getConfig();
 		ConfigurationNode mob = config.getNode("mob");
-		
-		for(Entry<Object, ? extends ConfigurationNode> child : mob.getChildrenMap().entrySet()) {
+
+		for (Entry<Object, ? extends ConfigurationNode> child : mob.getChildrenMap().entrySet()) {
 			ConfigurationNode childNode = child.getValue();
-			
+
 			String key = childNode.getKey().toString();
 
 			Optional<EntityType> optionalEntityType = Sponge.getRegistry().getType(EntityType.class, key);
-			
-			if(optionalEntityType.isPresent()) {
+
+			if (optionalEntityType.isPresent()) {
 				EntityType entityType = optionalEntityType.get();
-				
+
 				try {
 					Main.instance().getLog().info("Registering spawner recipe for " + entityType.getId());
 					Sponge.getRegistry().getRecipeRegistry().register(getRecipe(entityType, childNode.getString()));
@@ -49,17 +49,17 @@ public class Recipes {
 	public static void remove() {
 		ConfigurationNode config = ConfigManager.get().getConfig();
 		ConfigurationNode mob = config.getNode("mob");
-		
-		for(Entry<Object, ? extends ConfigurationNode> child : mob.getChildrenMap().entrySet()) {
+
+		for (Entry<Object, ? extends ConfigurationNode> child : mob.getChildrenMap().entrySet()) {
 			ConfigurationNode childNode = child.getValue();
-			
+
 			String key = childNode.getKey().toString();
 
 			Optional<EntityType> optionalEntityType = Sponge.getRegistry().getType(EntityType.class, key);
-			
-			if(optionalEntityType.isPresent()) {
+
+			if (optionalEntityType.isPresent()) {
 				EntityType entityType = optionalEntityType.get();
-				
+
 				try {
 					Sponge.getRegistry().getRecipeRegistry().remove(getRecipe(entityType, childNode.getString()));
 				} catch (InvalidItemTypeException e) {
@@ -68,34 +68,34 @@ public class Recipes {
 			}
 		}
 	}
-	
+
 	private static ShapedRecipe getRecipe(EntityType entity, String item) throws InvalidItemTypeException {
 		ConfigurationNode config = ConfigManager.get().getConfig();
 		ConfigurationNode recipe = config.getNode("recipe");
 
 		Builder builder = Sponge.getRegistry().createBuilder(ShapedRecipe.Builder.class);
 
-		for(Entry<Object, ? extends ConfigurationNode> child : recipe.getChildrenMap().entrySet()) {
+		for (Entry<Object, ? extends ConfigurationNode> child : recipe.getChildrenMap().entrySet()) {
 			ConfigurationNode childNode = child.getValue();
-			
+
 			String key = childNode.getKey().toString();
-			String value =  childNode.getString();
+			String value = childNode.getString();
 
 			String[] args;
-			if(value.equals("%MOB%")) {
+			if (value.equals("%MOB%")) {
 				args = item.split(":");
 			} else {
 				args = value.split(":");
 			}
-			
+
 			String itemId = args[0] + ":" + args[1];
-			
+
 			Optional<ItemType> optionalItemType = Sponge.getRegistry().getType(ItemType.class, itemId);
-			
-			if(optionalItemType.isPresent()) {
+
+			if (optionalItemType.isPresent()) {
 				ItemStack itemStack = ItemStack.builder().itemType(optionalItemType.get()).build();
-				
-				if(args.length == 3) {
+
+				if (args.length == 3) {
 					DataContainer container = itemStack.toContainer();
 					DataQuery query = DataQuery.of('/', "UnsafeDamage");
 					container.set(query, Integer.parseInt(args[2]));
@@ -103,9 +103,9 @@ public class Recipes {
 				}
 
 				String[] grid = key.split("x");
-				
+
 				builder.ingredient(new Vector2i(Integer.parseInt(grid[0]), Integer.parseInt(grid[1])), itemStack);
-			}else {
+			} else {
 				throw new InvalidItemTypeException("ItemType in config.conf at " + childNode.getKey().toString() + " is invalid");
 			}
 		}

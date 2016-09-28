@@ -44,10 +44,10 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	protected Spawner() {
 
 	}
-	
+
 	public Spawner(EntityType entity) {
 		ConfigurationNode config = ConfigManager.get().getConfig();
-		
+
 		this.entities.add(entity);
 		this.amount = config.getNode("settings", "spawn_amount").getInt();
 		this.time = config.getNode("settings", "time").getInt();
@@ -73,15 +73,14 @@ public class Spawner extends SQLUtils implements DataSerializable {
 		this.owner = owner;
 	}
 
-
 	public Optional<Location<World>> getLocation() {
 		return location;
 	}
-	
+
 	public void setLocation(Location<World> location) {
 		this.location = Optional.of(location);
 	}
-	
+
 	public List<EntityType> getEntities() {
 		return entities;
 	}
@@ -91,7 +90,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 			entities.add(entityType);
 		}
 	}
-	
+
 	public int getAmount() {
 		return amount;
 	}
@@ -127,42 +126,42 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	public UUID getOwner() {
 		return owner;
 	}
-	
+
 	public void setOwner(Player player) {
 		this.owner = player.getUniqueId();
 	}
-	
+
 	public static Optional<Spawner> get(Location<World> location) {
-		if(all().containsKey(location)) {
+		if (all().containsKey(location)) {
 			return Optional.of(all().get(location));
 		}
 
 		return Optional.empty();
 	}
-	
+
 	public static List<Spawner> get(Player player) {
 		List<Spawner> list = new ArrayList<>();
-		
-		for(Entry<Location<World>, Spawner> entry : all().entrySet()) {
+
+		for (Entry<Location<World>, Spawner> entry : all().entrySet()) {
 			Spawner spawner = entry.getValue();
-			
-			if(spawner.getOwner().equals(player.getUniqueId())) {
+
+			if (spawner.getOwner().equals(player.getUniqueId())) {
 				list.add(spawner);
 			}
 		}
 
 		return list;
 	}
-	
+
 	public static ConcurrentHashMap<Location<World>, Spawner> all() {
 		return cache;
 	}
 
 	public void create() {
-		if(location.isPresent()) {
+		if (location.isPresent()) {
 			Location<World> location = this.location.get();
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
-			
+
 			try {
 				Connection connection = getDataSource().getConnection();
 
@@ -176,9 +175,9 @@ public class Spawner extends SQLUtils implements DataSerializable {
 				connection.close();
 
 				cache.put(location, this);
-				
-				if(ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
-					if(Sponge.getServer().getPlayer(getOwner()).isPresent()) {
+
+				if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+					if (Sponge.getServer().getPlayer(getOwner()).isPresent()) {
 						Main.instance().spawn(this);
 					}
 				} else {
@@ -191,33 +190,33 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	}
 
 	public void update() {
-		if(location.isPresent()) {
+		if (location.isPresent()) {
 			Location<World> location = this.location.get();
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
-			
+
 			try {
 				Connection connection = getDataSource().getConnection();
-	
+
 				PreparedStatement statement = connection.prepareStatement("UPDATE Spawners SET Spawner = ? WHERE Name = ?");
-	
+
 				statement.setString(1, Serializer.serialize(this));
 				statement.setString(2, name);
-	
+
 				statement.executeUpdate();
-	
+
 				connection.close();
-	
+
 				cache.put(location, this);
-	
+
 				for (Task task : Sponge.getScheduler().getScheduledTasks()) {
 					if (task.getName().startsWith("mobspawners:" + name) && !task.getName().startsWith("mobspawners:" + name + ":blockupdate")) {
 						task.cancel();
 					}
 				}
-	
+
 				if (isEnabled()) {
-					if(ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
-						if(Sponge.getServer().getPlayer(getOwner()).isPresent()) {
+					if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+						if (Sponge.getServer().getPlayer(getOwner()).isPresent()) {
 							Main.instance().spawn(this);
 						}
 					} else {
@@ -231,28 +230,28 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	}
 
 	public void remove() {
-		if(location.isPresent()) {
+		if (location.isPresent()) {
 			Location<World> location = this.location.get();
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
-			
+
 			try {
 				Connection connection = getDataSource().getConnection();
-	
+
 				PreparedStatement statement = connection.prepareStatement("DELETE from Spawners WHERE Name = ?");
-	
+
 				statement.setString(1, name);
 				statement.executeUpdate();
-	
+
 				connection.close();
-	
+
 				cache.remove(location);
-	
+
 				for (Task task : Sponge.getScheduler().getScheduledTasks()) {
 					if (task.getName().startsWith("mobspawners:" + name)) {
 						task.cancel();
 					}
 				}
-				
+
 				this.location = Optional.empty();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -270,12 +269,12 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 			while (result.next()) {
 				Spawner spawner = Serializer.deserialize(result.getString("Spawner"));
-				
+
 				cache.put(spawner.getLocation().get(), spawner);
 
 				if (spawner.isEnabled()) {
-					if(ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
-						if(Sponge.getServer().getPlayer(spawner.getOwner()).isPresent()) {
+					if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+						if (Sponge.getServer().getPlayer(spawner.getOwner()).isPresent()) {
 							Main.instance().spawn(spawner);
 						}
 					} else {
@@ -302,11 +301,11 @@ public class Spawner extends SQLUtils implements DataSerializable {
 		for (EntityType type : this.entities) {
 			entities.add(type.getId());
 		}
-		
-		if(location.isPresent()) {
+
+		if (location.isPresent()) {
 			Location<World> location = this.location.get();
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
-			
+
 			return new MemoryDataContainer().set(DataQueries.LOCATION, name).set(DataQueries.ENTITIES, entities).set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());
 		} else {
 			return new MemoryDataContainer().set(DataQueries.ENTITIES, entities).set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());

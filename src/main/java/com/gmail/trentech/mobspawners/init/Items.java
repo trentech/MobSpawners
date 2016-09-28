@@ -22,29 +22,29 @@ public class Items {
 
 	public static ItemStack getSpawner(Spawner spawner) {
 		ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.STAINED_GLASS).build();
-		
+
 		DyeableData dyeableData = Sponge.getDataManager().getManipulatorBuilder(DyeableData.class).get().create();
 		dyeableData.type().set(DyeColors.BLACK);
 
 		itemStack.offer(dyeableData);
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
 
-		if(!spawner.getEntities().isEmpty()) {
+		if (!spawner.getEntities().isEmpty()) {
 			itemStack.offer(new SpawnerData(spawner));
 			List<Text> lore = new ArrayList<>();
 
 			lore.add(Text.of(TextColors.GREEN, "Entities:"));
-			
-			for(EntityType type : spawner.getEntities()) {
+
+			for (EntityType type : spawner.getEntities()) {
 				lore.add(Text.of(TextColors.YELLOW, "  - ", type.getId()));
 			}
-			
+
 			List<ItemEnchantment> enchantments = new ArrayList<>();
 			enchantments.add(new ItemEnchantment(Enchantments.FLAME, 1));
 
 			itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 			itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
-			
+
 			itemStack.offer(Keys.ITEM_LORE, lore);
 		}
 

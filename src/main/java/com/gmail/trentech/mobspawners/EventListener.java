@@ -46,21 +46,22 @@ public class EventListener {
 
 	@Listener
 	public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-		if(ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
-			for(Spawner spawner : Spawner.get(player)) {
-				// NEED TO DO SOME CHECKS FOR REDSTONE TORCHES AND REDSTONE  BLOCKS 
-				if(spawner.isEnabled()) {
+		if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+			for (Spawner spawner : Spawner.get(player)) {
+				// NEED TO DO SOME CHECKS FOR REDSTONE TORCHES AND REDSTONE
+				// BLOCKS
+				if (spawner.isEnabled()) {
 					Main.instance().spawn(spawner);
 				}
 			}
 		}
 	}
-	
+
 	@Listener
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-		if(ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
-			for(Spawner spawner : Spawner.get(player)) {
-				if(ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+		if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+			for (Spawner spawner : Spawner.get(player)) {
+				if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
 					Location<World> location = spawner.getLocation().get();
 					String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
@@ -73,7 +74,7 @@ public class EventListener {
 			}
 		}
 	}
-	
+
 	@Listener(order = Order.POST)
 	public void onAffectSlotEvent(AffectSlotEvent event, @Root Player player) {
 		Sponge.getScheduler().createTaskBuilder().async().delayTicks(3).execute(task -> {
@@ -83,23 +84,23 @@ public class EventListener {
 
 	@Listener
 	public void onBlockChangeEvent(ChangeBlockEvent.Place event, @Root Player player) {
-		for(Transaction<BlockSnapshot> transaction : event.getTransactions()) {
+		for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
 			BlockSnapshot snapshot = transaction.getFinal();
-			
-			if(!snapshot.getState().getType().equals(BlockTypes.STAINED_GLASS)) {
+
+			if (!snapshot.getState().getType().equals(BlockTypes.STAINED_GLASS)) {
 				continue;
 			}
-			
+
 			Optional<Location<World>> optionalLocation = snapshot.getLocation();
-			
-			if(!optionalLocation.isPresent()) {
+
+			if (!optionalLocation.isPresent()) {
 				continue;
 			}
 			Location<World> location = optionalLocation.get();
-			
-			if(cache.containsKey(player.getUniqueId())) {
+
+			if (cache.containsKey(player.getUniqueId())) {
 				Spawner spawner = cache.get(player.getUniqueId()).spawner().get();
-				
+
 				spawner.setLocation(location);
 				spawner.setOwner(player);
 				spawner.create();
@@ -108,48 +109,48 @@ public class EventListener {
 			}
 		}
 	}
-	
+
 	@Listener
 	public void onBlockChangeEvent(ChangeBlockEvent.Break event) {
 
-		for(Transaction<BlockSnapshot> transaction : event.getTransactions()) {
+		for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
 			BlockSnapshot snapshot = transaction.getOriginal();
-			
+
 			Optional<Location<World>> optionalLocation = snapshot.getLocation();
-			
-			if(!optionalLocation.isPresent()) {
+
+			if (!optionalLocation.isPresent()) {
 				return;
 			}
 			Location<World> location = optionalLocation.get();
-			
+
 			Optional<Spawner> optionalSpawner = Spawner.get(location);
-			
-			if(!optionalSpawner.isPresent()) {
+
+			if (!optionalSpawner.isPresent()) {
 				return;
 			}
 			Spawner spawner = optionalSpawner.get();
-			
+
 			spawner.remove();
 
 			Optional<Player> optionalPlayer = event.getCause().first(Player.class);
-			
-			if(optionalPlayer.isPresent()) {
+
+			if (optionalPlayer.isPresent()) {
 				Player player = optionalPlayer.get();
-				
-				if(player.gameMode().get().equals(GameModes.CREATIVE)) {
+
+				if (player.gameMode().get().equals(GameModes.CREATIVE)) {
 					return;
 				}
 			}
-			
+
 			ItemStack itemStack = Items.getSpawner(spawner);
 
 			Item item = (Item) location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 			item.offer(Keys.REPRESENTED_ITEM, itemStack.createSnapshot());
-			
+
 			location.getExtent().spawnEntity(item, Cause.of(NamedCause.source(EntitySpawnCause.builder().entity(item).type(SpawnTypes.PLUGIN).build())));
 		}
 	}
-	
+
 	@Listener
 	public void onNotifyNeighborBlockEvent(NotifyNeighborBlockEvent event, @First BlockSnapshot snapshot) {
 		if (snapshot.get(Keys.POWER).isPresent()) {
@@ -160,8 +161,8 @@ public class EventListener {
 
 				if (optionalSpawner.isPresent()) {
 					Spawner spawner = optionalSpawner.get();
-					
-					if(spawner.isEnabled() == snapshot.get(Keys.POWER).get() >= 1) {
+
+					if (spawner.isEnabled() == snapshot.get(Keys.POWER).get() >= 1) {
 						spawner.setEnabled(!(snapshot.get(Keys.POWER).get() >= 1));
 						spawner.update();
 					}
@@ -175,8 +176,8 @@ public class EventListener {
 
 				if (optionalSpawner.isPresent()) {
 					Spawner spawner = optionalSpawner.get();
-					
-					if(spawner.isEnabled() == snapshot.get(Keys.POWERED).get()) {
+
+					if (spawner.isEnabled() == snapshot.get(Keys.POWERED).get()) {
 						spawner.setEnabled(!snapshot.get(Keys.POWERED).get());
 						spawner.update();
 					}
@@ -190,8 +191,8 @@ public class EventListener {
 
 				if (optionalSpawner.isPresent()) {
 					Spawner spawner = optionalSpawner.get();
-					
-					if(spawner.isEnabled()) {
+
+					if (spawner.isEnabled()) {
 						spawner.setEnabled(false);
 						spawner.update();
 					}
@@ -205,8 +206,8 @@ public class EventListener {
 
 				if (optionalSpawner.isPresent()) {
 					Spawner spawner = optionalSpawner.get();
-					
-					if(spawner.isEnabled()) {
+
+					if (spawner.isEnabled()) {
 						spawner.setEnabled(false);
 						spawner.update();
 					}
@@ -220,8 +221,8 @@ public class EventListener {
 
 				if (optionalSpawner.isPresent()) {
 					Spawner spawner = optionalSpawner.get();
-					
-					if(!spawner.isEnabled()) {
+
+					if (!spawner.isEnabled()) {
 						spawner.setEnabled(true);
 						spawner.update();
 					}
@@ -229,16 +230,16 @@ public class EventListener {
 			}
 		}
 	}
-	
+
 	public static void checkItemInHand(Player player) {
 		Optional<ItemStack> optionalItemStack = player.getItemInHand(HandTypes.MAIN_HAND);
-		
-		if(optionalItemStack.isPresent()) {
+
+		if (optionalItemStack.isPresent()) {
 			ItemStack itemStack = optionalItemStack.get();
 
 			Optional<SpawnerData> optionalData = itemStack.get(SpawnerData.class);
-			
-			if(optionalData.isPresent()) {
+
+			if (optionalData.isPresent()) {
 				cache.put(player.getUniqueId(), optionalData.get());
 
 				return;

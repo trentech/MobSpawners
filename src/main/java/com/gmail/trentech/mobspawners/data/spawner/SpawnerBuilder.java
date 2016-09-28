@@ -41,26 +41,26 @@ public class SpawnerBuilder extends AbstractDataBuilder<Spawner> {
 			int time = container.getInt(TIME).get();
 			int range = container.getInt(RANGE).get();
 			boolean enable = container.getBoolean(ENABLE).get();
-			
+
 			UUID owner = UUID.fromString(container.getString(OWNER).get());
-			
+
 			if (container.contains(LOCATION)) {
 				String[] args = container.getString(LOCATION).get().split("\\.");
 
-					Optional<World> optionalWorld = Sponge.getServer().getWorld(args[0]);
+				Optional<World> optionalWorld = Sponge.getServer().getWorld(args[0]);
 
-					if (!optionalWorld.isPresent()) {
-						return Optional.empty();
-					}
-					World world = optionalWorld.get();
+				if (!optionalWorld.isPresent()) {
+					return Optional.empty();
+				}
+				World world = optionalWorld.get();
 
-					Location<World> location = new Location<World>(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
-					
-					return Optional.of(new Spawner(entities, location, amount, time, range, enable, owner));
+				Location<World> location = new Location<World>(world, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+
+				return Optional.of(new Spawner(entities, location, amount, time, range, enable, owner));
 			} else {
 				return Optional.of(new Spawner(entities, amount, time, range, enable, owner));
 			}
-			
+
 		}
 
 		return Optional.empty();

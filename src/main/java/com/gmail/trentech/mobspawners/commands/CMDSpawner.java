@@ -2,8 +2,8 @@ package com.gmail.trentech.mobspawners.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -25,14 +25,14 @@ public class CMDSpawner implements CommandExecutor {
 		List<Text> list = new ArrayList<>();
 
 		list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command to execute "))).onClick(TextActions.runCommand("/customspawners:spawner help")).append(Text.of(" /spawner help")).build());
-		
+
 		for (Entry<String, Help> entry : Help.all().entrySet()) {
 			String id = entry.getKey();
 			String command = entry.getValue().getCommand();
-			
+
 			Optional<String> optionalPermission = entry.getValue().getPermission();
-			
-			if(optionalPermission.isPresent()) {
+
+			if (optionalPermission.isPresent()) {
 				if (src.hasPermission(optionalPermission.get())) {
 					list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(id))).append(Text.of(" /spawner " + command)).build());
 				}
@@ -40,7 +40,7 @@ public class CMDSpawner implements CommandExecutor {
 				list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(id))).append(Text.of(" /spawner " + command)).build());
 			}
 		}
-		
+
 		if (src instanceof Player) {
 			PaginationList.Builder pages = PaginationList.builder();
 
@@ -54,7 +54,7 @@ public class CMDSpawner implements CommandExecutor {
 				src.sendMessage(text);
 			}
 		}
-		
+
 		return CommandResult.success();
 	}
 }

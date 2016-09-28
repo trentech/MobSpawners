@@ -1,6 +1,7 @@
 package com.gmail.trentech.mobspawners.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
+
 import org.spongepowered.api.data.DataQuery;
 
 public class DataQueries {
