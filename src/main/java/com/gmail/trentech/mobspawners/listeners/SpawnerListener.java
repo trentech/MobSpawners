@@ -1,4 +1,4 @@
-package com.gmail.trentech.mobspawners;
+package com.gmail.trentech.mobspawners.listeners;
 
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -35,12 +35,13 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
 import com.gmail.trentech.mobspawners.init.Items;
 import com.gmail.trentech.mobspawners.utils.ConfigManager;
 
-public class EventListener {
+public class SpawnerListener {
 
 	private static ConcurrentHashMap<UUID, SpawnerData> cache = new ConcurrentHashMap<>();
 
@@ -48,13 +49,12 @@ public class EventListener {
 	public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
 		if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
 			for (Spawner spawner : Spawner.get(player)) {
-				// NEED TO DO SOME CHECKS FOR REDSTONE TORCHES AND REDSTONE
-				// BLOCKS
 				if (spawner.isEnabled()) {
 					Main.instance().spawn(spawner);
 				}
 			}
 		}
+		checkItemInHand(player);
 	}
 
 	@Listener

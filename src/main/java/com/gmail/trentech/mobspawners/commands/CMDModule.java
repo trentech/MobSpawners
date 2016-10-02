@@ -18,8 +18,16 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.utils.Help;
 
-public class CMDSpawner implements CommandExecutor {
+public class CMDModule implements CommandExecutor {
 
+	public CMDModule() {
+		Help help = new Help("s.module", "module", " Subcommand for modules");
+		help.setPermission("mobspawners.cmd.spawner.module");
+		help.setSyntax(" /spawner module\n /ms m");
+		help.setExample(" /spawner module");
+		help.save();
+	}
+	
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
@@ -29,7 +37,7 @@ public class CMDSpawner implements CommandExecutor {
 		for (Entry<String, Help> entry : Help.all().entrySet()) {
 			String id = entry.getKey();
 			
-			if(!id.startsWith("s.")) {
+			if(!id.startsWith("m.")) {
 				continue;
 			}
 			

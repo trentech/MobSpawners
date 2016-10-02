@@ -23,9 +23,9 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDList implements CommandExecutor {
 
 	public CMDList() {
-		Help help = new Help("list", "list", " List all spawners by name");
-		help.setPermission("customspawners.cmd.spawner.list");
-		help.setSyntax(" /spawner list\n /cs l");
+		Help help = new Help("s.list", "list", " List all spawners and their locations");
+		help.setPermission("mobspawners.cmd.spawner.list");
+		help.setSyntax(" /spawner list\n /ms l");
 		help.setExample(" /spawner list");
 		help.save();
 	}

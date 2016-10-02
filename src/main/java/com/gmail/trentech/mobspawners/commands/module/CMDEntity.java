@@ -1,4 +1,4 @@
-package com.gmail.trentech.mobspawners.commands;
+package com.gmail.trentech.mobspawners.commands.module;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -11,18 +11,17 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
+import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
 import com.gmail.trentech.mobspawners.utils.Help;
 
-public class CMDCreate implements CommandExecutor {
+public class CMDEntity implements CommandExecutor {
 
-	public CMDCreate() {
-		Help help = new Help("s.create", "create", " Temporary command to create mob spawner");
-		help.setPermission("mobspawners.cmd.spawner.create");
-		help.setSyntax(" /spawner create <entity>\n /ms c <entity>");
-		help.setExample(" /spawner create minecraft:zombie");
+	public CMDEntity() {
+		Help help = new Help("m.entity", "entity", " Temporary command to create mob module");
+		help.setPermission("mobspawners.cmd.spawner.module.entity");
+		help.setSyntax(" /spawner module entity <entity>\n /ms m e <entity>");
+		help.setExample(" /spawner module entity minecraft:creeper");
 		help.save();
 	}
 
@@ -34,12 +33,12 @@ public class CMDCreate implements CommandExecutor {
 		Player player = (Player) src;
 
 		EntityType entity = args.<EntityType>getOne("entity").get();
-
-		ItemStack itemStack = Items.getSpawner(new Spawner(entity));
+		
+		ItemStack itemStack = Items.getEntityModule(entity);
 
 		player.getInventory().offer(itemStack);
 
-		SpawnerListener.checkItemInHand(player);
+		EntityModuleListener.checkItemInHand(player);
 
 		return CommandResult.success();
 	}

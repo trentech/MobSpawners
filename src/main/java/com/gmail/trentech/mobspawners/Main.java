@@ -41,6 +41,10 @@ import com.gmail.trentech.mobspawners.data.spawner.SpawnerBuilder;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerDataManipulatorBuilder;
 import com.gmail.trentech.mobspawners.init.Recipes;
+import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
+import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
+import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
+import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
 import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.Resource;
 import com.gmail.trentech.mobspawners.utils.SQLUtils;
@@ -80,7 +84,11 @@ public class Main {
 	public void onInitialization(GameInitializationEvent event) {
 		ConfigManager.init();
 
-		Sponge.getEventManager().registerListeners(this, new EventListener());
+		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
+		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
+		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
+		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
+		
 		Sponge.getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
 		Sponge.getDataManager().register(SpawnerData.class, ImmutableSpawnerData.class, new SpawnerDataManipulatorBuilder());
 		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "ms");

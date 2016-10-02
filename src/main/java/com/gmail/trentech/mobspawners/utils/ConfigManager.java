@@ -57,16 +57,49 @@ public class ConfigManager {
 		CommentedConfigurationNode config = configManager.getConfig();
 
 		if (configName.equalsIgnoreCase("config")) {
-			if (config.getNode("recipe").isVirtual()) {
-				config.getNode("recipe", "1x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "1x2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "1x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "2x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "2x2").setValue("%MOB%");
-				config.getNode("recipe", "2x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "3x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "3x2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-				config.getNode("recipe", "3x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+			if (config.getNode("recipe", "spawner").isVirtual()) {
+				config.getNode("recipe", "spawner", "1x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "1x2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "1x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "2x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "2x2").setValue("%ENTITY%");
+				config.getNode("recipe", "spawner", "2x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "3x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "3x2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+				config.getNode("recipe", "spawner", "3x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+			}
+			if (config.getNode("recipe", "speed_module").isVirtual()) {
+				config.getNode("recipe", "speed_module", "1x1").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "speed_module", "1x2").setValue(ItemTypes.REPEATER.getId());
+				config.getNode("recipe", "speed_module", "1x3").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "speed_module", "2x1").setValue(ItemTypes.REDSTONE.getId());
+				config.getNode("recipe", "speed_module", "2x2").setValue(ItemTypes.DIAMOND.getId());
+				config.getNode("recipe", "speed_module", "2x3").setValue(ItemTypes.REDSTONE.getId());
+				config.getNode("recipe", "speed_module", "3x1").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "speed_module", "3x2").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "speed_module", "3x3").setValue(ItemTypes.GOLD_BLOCK.getId());
+			}
+			if (config.getNode("recipe", "quantity_module").isVirtual()) {
+				config.getNode("recipe", "quantity_module", "1x1").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "quantity_module", "1x2").setValue(ItemTypes.COMPARATOR.getId());
+				config.getNode("recipe", "quantity_module", "1x3").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "quantity_module", "2x1").setValue(ItemTypes.REDSTONE.getId());
+				config.getNode("recipe", "quantity_module", "2x2").setValue(ItemTypes.DIAMOND.getId());
+				config.getNode("recipe", "quantity_module", "2x3").setValue(ItemTypes.REDSTONE.getId());
+				config.getNode("recipe", "quantity_module", "3x1").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "quantity_module", "3x2").setValue(ItemTypes.GOLD_BLOCK.getId());
+				config.getNode("recipe", "quantity_module", "3x3").setValue(ItemTypes.GOLD_BLOCK.getId());
+			}
+			if (config.getNode("recipe", "entity_module").isVirtual()) {
+				config.getNode("recipe", "entity_module", "1x1").setValue(ItemTypes.GOLD_INGOT.getId() + ":15");
+				config.getNode("recipe", "entity_module", "1x2").setValue(ItemTypes.GOLD_INGOT.getId() + ":15");
+				config.getNode("recipe", "entity_module", "1x3").setValue(ItemTypes.GOLD_INGOT.getId() + ":15");
+				config.getNode("recipe", "entity_module", "2x1").setValue(ItemTypes.REDSTONE.getId());
+				config.getNode("recipe", "entity_module", "2x2").setValue("%ENTITY%");
+				config.getNode("recipe", "entity_module", "2x3").setValue(ItemTypes.REDSTONE.getId());
+				config.getNode("recipe", "entity_module", "3x1").setValue(ItemTypes.GOLD_INGOT.getId() + ":15");
+				config.getNode("recipe", "entity_module", "3x2").setValue(ItemTypes.GOLD_INGOT.getId() + ":15");
+				config.getNode("recipe", "entity_module", "3x3").setValue(ItemTypes.GOLD_INGOT.getId() + ":15");
 			}
 			if (config.getNode("settings", "spawn_amount").isVirtual()) {
 				config.getNode("settings", "spawn_amount").setValue(3);
@@ -79,6 +112,12 @@ public class ConfigManager {
 			}
 			if (config.getNode("settings", "disable_on_logout").isVirtual()) {
 				config.getNode("settings", "disable_on_logout").setValue(true);
+			}
+			if (config.getNode("settings", "speed_module_increment").isVirtual()) {
+				config.getNode("settings", "speed_module_increment").setValue(2);
+			}
+			if (config.getNode("settings", "quantity_module_increment").isVirtual()) {
+				config.getNode("settings", "quantity_module_increment").setValue(1);
 			}
 			for (EntityType entityType : Sponge.getRegistry().getAllOf(EntityType.class)) {
 				if (Living.class.isAssignableFrom(entityType.getEntityClass()) && !(entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN) || entityType.equals(EntityTypes.PLAYER))) {

@@ -1,28 +1,27 @@
-package com.gmail.trentech.mobspawners.commands;
+package com.gmail.trentech.mobspawners.commands.module;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
+import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
+import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.Help;
 
-public class CMDCreate implements CommandExecutor {
+public class CMDQuantity implements CommandExecutor {
 
-	public CMDCreate() {
-		Help help = new Help("s.create", "create", " Temporary command to create mob spawner");
-		help.setPermission("mobspawners.cmd.spawner.create");
-		help.setSyntax(" /spawner create <entity>\n /ms c <entity>");
-		help.setExample(" /spawner create minecraft:zombie");
+	public CMDQuantity() {
+		Help help = new Help("m.quantity", "quantity", " Temporary command to create quantity module");
+		help.setPermission("mobspawners.cmd.spawner.module.quantity");
+		help.setSyntax(" /spawner module quantity\n /ms m q");
+		help.setExample(" /spawner module quantity");
 		help.save();
 	}
 
@@ -33,13 +32,11 @@ public class CMDCreate implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		EntityType entity = args.<EntityType>getOne("entity").get();
-
-		ItemStack itemStack = Items.getSpawner(new Spawner(entity));
+		ItemStack itemStack = Items.getQuantityModule(ConfigManager.get().getConfig().getNode("settings", "quantity_module_increment").getInt());
 
 		player.getInventory().offer(itemStack);
 
-		SpawnerListener.checkItemInHand(player);
+		QuantityModuleListener.checkItemInHand(player);
 
 		return CommandResult.success();
 	}
