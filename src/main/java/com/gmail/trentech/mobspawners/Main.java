@@ -22,6 +22,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -83,12 +84,13 @@ public class Main {
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
 		ConfigManager.init();
+		ConfigManager.init("recipes");
 
 		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
 		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
 		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
 		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
-		
+
 		Sponge.getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
 		Sponge.getDataManager().register(SpawnerData.class, ImmutableSpawnerData.class, new SpawnerDataManipulatorBuilder());
 		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "ms");
@@ -107,6 +109,31 @@ public class Main {
 		Spawner.init();
 	}
 
+	@Listener
+	public void onReloadEvent(GameReloadEvent event) {
+		Sponge.getEventManager().unregisterPluginListeners(getPlugin());
+		
+		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
+		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
+		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
+		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
+		
+		try {
+			Recipes.remove();
+		} catch (Exception e) {
+			getLog().warn("Recipe registration failed. This could be an implementation error.");
+		}
+		
+		ConfigManager.init();
+		ConfigManager.init("recipes");
+		
+		try {
+			Recipes.register();
+		} catch (Exception e) {
+			getLog().warn("Recipe registration failed. This could be an implementation error.");
+		}
+	}
+	
 	public Logger getLog() {
 		return log;
 	}
@@ -153,7 +180,7 @@ public class Main {
 
 						for (int i = 0; i < amount; i++) {
 
-							location.set(getRandomLocation(location.get(), spawner.getRadius()));
+							location.set(getRandomLocation(spawnerLocation, spawner.getRadius()));
 
 							EntityType entityType = entities.get(random.nextInt(entities.size()));
 
@@ -190,13 +217,12 @@ public class Main {
 
 	private Location<World> getRandomLocation(Location<World> location, int radius) {
 		TeleportHelper teleportHelper = Sponge.getGame().getTeleportHelper();
-		radius = radius / 2;
 
 		for (int i = 0; i < 19; i++) {
-			int x = ((random.nextInt(radius * 2) - radius) + location.getBlockX());
-			int z = ((random.nextInt(radius * 2) - radius) + location.getBlockZ());
+			double x = random.nextDouble() * (radius * 2) - radius;
+            double z = random.nextDouble() * (radius * 2) - radius;
 
-			Optional<Location<World>> optionalLocation = teleportHelper.getSafeLocation(location.getExtent().getLocation(x, location.getBlockY(), z));
+			Optional<Location<World>> optionalLocation = teleportHelper.getSafeLocation(location.add(x, 0, z));
 
 			if (!optionalLocation.isPresent()) {
 				continue;

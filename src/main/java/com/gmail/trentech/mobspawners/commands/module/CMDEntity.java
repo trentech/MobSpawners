@@ -12,7 +12,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
 import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDEntity implements CommandExecutor {
@@ -33,12 +32,10 @@ public class CMDEntity implements CommandExecutor {
 		Player player = (Player) src;
 
 		EntityType entity = args.<EntityType>getOne("entity").get();
-		
+
 		ItemStack itemStack = Items.getEntityModule(entity);
 
 		player.getInventory().offer(itemStack);
-
-		EntityModuleListener.checkItemInHand(player);
 
 		return CommandResult.success();
 	}

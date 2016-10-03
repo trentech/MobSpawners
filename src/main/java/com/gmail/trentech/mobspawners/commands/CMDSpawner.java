@@ -28,11 +28,11 @@ public class CMDSpawner implements CommandExecutor {
 
 		for (Entry<String, Help> entry : Help.all().entrySet()) {
 			String id = entry.getKey();
-			
-			if(!id.startsWith("s.")) {
+
+			if (!id.startsWith("s.")) {
 				continue;
 			}
-			
+
 			String command = entry.getValue().getCommand();
 
 			Optional<String> optionalPermission = entry.getValue().getPermission();

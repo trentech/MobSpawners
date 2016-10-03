@@ -47,7 +47,7 @@ public class SpawnerListener {
 
 	@Listener
 	public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-		if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+		if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 			for (Spawner spawner : Spawner.get(player)) {
 				if (spawner.isEnabled()) {
 					Main.instance().spawn(spawner);
@@ -59,14 +59,14 @@ public class SpawnerListener {
 
 	@Listener
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-		if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+		if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 			for (Spawner spawner : Spawner.get(player)) {
-				if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+				if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 					Location<World> location = spawner.getLocation().get();
 					String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 					for (Task task : Sponge.getScheduler().getScheduledTasks()) {
-						if (task.getName().startsWith("mobspawners:" + name) && !task.getName().startsWith("mobspawners:" + name + ":blockupdate")) {
+						if (task.getName().startsWith("mobspawners:" + name)) {
 							task.cancel();
 						}
 					}

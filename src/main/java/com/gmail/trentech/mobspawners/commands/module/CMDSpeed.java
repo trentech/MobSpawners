@@ -11,7 +11,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
 import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.Help;
 
@@ -32,11 +31,9 @@ public class CMDSpeed implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		ItemStack itemStack = Items.getSpeedModule(ConfigManager.get().getConfig().getNode("settings", "speed_module_increment").getInt());
+		ItemStack itemStack = Items.getSpeedModule(ConfigManager.get().getConfig().getNode("settings", "speed-module-increment").getInt());
 
 		player.getInventory().offer(itemStack);
-
-		SpeedModuleListener.checkItemInHand(player);
 
 		return CommandResult.success();
 	}

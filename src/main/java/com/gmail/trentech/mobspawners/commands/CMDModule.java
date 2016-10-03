@@ -27,7 +27,7 @@ public class CMDModule implements CommandExecutor {
 		help.setExample(" /spawner module");
 		help.save();
 	}
-	
+
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
@@ -36,11 +36,11 @@ public class CMDModule implements CommandExecutor {
 
 		for (Entry<String, Help> entry : Help.all().entrySet()) {
 			String id = entry.getKey();
-			
-			if(!id.startsWith("m.")) {
+
+			if (!id.startsWith("m.")) {
 				continue;
 			}
-			
+
 			String command = entry.getValue().getCommand();
 
 			Optional<String> optionalPermission = entry.getValue().getPermission();

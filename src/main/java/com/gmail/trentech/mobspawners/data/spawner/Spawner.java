@@ -41,15 +41,13 @@ public class Spawner extends SQLUtils implements DataSerializable {
 	protected boolean enable = true;
 	protected UUID owner = UUID.randomUUID();
 
-	protected Spawner() {
-
-	}
+	protected Spawner() {}
 
 	public Spawner(EntityType entity) {
 		ConfigurationNode config = ConfigManager.get().getConfig();
 
 		this.entities.add(entity);
-		this.amount = config.getNode("settings", "spawn_amount").getInt();
+		this.amount = config.getNode("settings", "spawn-amount").getInt();
 		this.time = config.getNode("settings", "time").getInt();
 		this.radius = config.getNode("settings", "radius").getInt();
 	}
@@ -176,7 +174,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 
 				cache.put(location, this);
 
-				if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+				if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 					if (Sponge.getServer().getPlayer(getOwner()).isPresent()) {
 						Main.instance().spawn(this);
 					}
@@ -209,13 +207,13 @@ public class Spawner extends SQLUtils implements DataSerializable {
 				cache.put(location, this);
 
 				for (Task task : Sponge.getScheduler().getScheduledTasks()) {
-					if (task.getName().startsWith("mobspawners:" + name) && !task.getName().startsWith("mobspawners:" + name + ":blockupdate")) {
+					if (task.getName().startsWith("mobspawners:" + name)) {
 						task.cancel();
 					}
 				}
 
 				if (isEnabled()) {
-					if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+					if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 						if (Sponge.getServer().getPlayer(getOwner()).isPresent()) {
 							Main.instance().spawn(this);
 						}
@@ -273,7 +271,7 @@ public class Spawner extends SQLUtils implements DataSerializable {
 				cache.put(spawner.getLocation().get(), spawner);
 
 				if (spawner.isEnabled()) {
-					if (ConfigManager.get().getConfig().getNode("settings", "disable_on_logout").getBoolean()) {
+					if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 						if (Sponge.getServer().getPlayer(spawner.getOwner()).isPresent()) {
 							Main.instance().spawn(spawner);
 						}
