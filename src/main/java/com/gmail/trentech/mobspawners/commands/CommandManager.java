@@ -5,10 +5,10 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.text.Text;
 
+import com.gmail.trentech.mobspawners.commands.elements.HelpElement;
 import com.gmail.trentech.mobspawners.commands.module.CMDEntity;
 import com.gmail.trentech.mobspawners.commands.module.CMDQuantity;
 import com.gmail.trentech.mobspawners.commands.module.CMDSpeed;
-import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CommandManager {
 	
@@ -52,7 +52,7 @@ public class CommandManager {
 	private CommandSpec cmdHelp = CommandSpec.builder()
 		    .description(Text.of(" I need help with Custom Spawners"))
 		    .permission("mobspawners.cmd.spawner")
-		    .arguments(GenericArguments.choices(Text.of("command"), Help.all()))
+		    .arguments(new HelpElement(Text.of("rawCommand")))
 		    .executor(new CMDHelp())
 		    .build();
 	

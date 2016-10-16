@@ -17,11 +17,11 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDQuantity implements CommandExecutor {
 
 	public CMDQuantity() {
-		Help help = new Help("m.quantity", "quantity", " Temporary command to create quantity module");
-		help.setPermission("mobspawners.cmd.spawner.module.quantity");
-		help.setSyntax(" /spawner module quantity\n /ms m q");
-		help.setExample(" /spawner module quantity");
-		help.save();
+		new Help("spawner module quantity", "quantity", "Temporary command to create quantity module", false)
+			.setPermission("mobspawners.cmd.spawner.module.quantity")
+			.setUsage("/spawner module quantity\n /ms m q")
+			.setExample("/spawner module quantity")
+			.save();
 	}
 
 	@Override

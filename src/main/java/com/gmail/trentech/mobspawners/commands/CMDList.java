@@ -23,11 +23,11 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDList implements CommandExecutor {
 
 	public CMDList() {
-		Help help = new Help("s.list", "list", " List all spawners and their locations");
-		help.setPermission("mobspawners.cmd.spawner.list");
-		help.setSyntax(" /spawner list\n /ms l");
-		help.setExample(" /spawner list");
-		help.save();
+		new Help("spawner list", "list", "List all spawners and their locations", false)
+			.setPermission("mobspawners.cmd.spawner.list")
+			.setUsage("/spawner list\n /ms l")
+			.setExample("/spawner list")
+			.save();
 	}
 
 	@Override

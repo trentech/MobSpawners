@@ -3,9 +3,7 @@ package com.gmail.trentech.mobspawners.init;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.DyeableData;
 import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.EntityType;
@@ -83,10 +81,10 @@ public class Items {
 	public static ItemStack getSpawner(Spawner spawner) {
 		ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.STAINED_GLASS).build();
 
-		DyeableData dyeableData = Sponge.getDataManager().getManipulatorBuilder(DyeableData.class).get().create();
-		dyeableData.type().set(DyeColors.BLACK);
-
-		itemStack.offer(dyeableData);
+		//DyeableData dyeableData = Sponge.getDataManager().getManipulatorBuilder(DyeableData.class).get().create();
+		//dyeableData.type().set(DyeColors.BLACK);
+		itemStack.offer(Keys.DYE_COLOR, DyeColors.BLACK);
+		//itemStack.offer(dyeableData);
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
 
 		if (!spawner.getEntities().isEmpty()) {

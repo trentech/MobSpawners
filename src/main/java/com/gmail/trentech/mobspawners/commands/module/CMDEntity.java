@@ -17,11 +17,11 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDEntity implements CommandExecutor {
 
 	public CMDEntity() {
-		Help help = new Help("m.entity", "entity", " Temporary command to create mob module");
-		help.setPermission("mobspawners.cmd.spawner.module.entity");
-		help.setSyntax(" /spawner module entity <entity>\n /ms m e <entity>");
-		help.setExample(" /spawner module entity minecraft:creeper");
-		help.save();
+		new Help("spawner module entity", "entity", "Temporary command to create mob module", false)
+			.setPermission("mobspawners.cmd.spawner.module.entity")
+			.setUsage("/spawner module entity <entity>\n /ms m e <entity>")
+			.setExample("/spawner module entity minecraft:creeper")
+			.save();
 	}
 
 	@Override

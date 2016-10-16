@@ -17,11 +17,11 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDSpeed implements CommandExecutor {
 
 	public CMDSpeed() {
-		Help help = new Help("m.speed", "speed", " Temporary command to create speed module");
-		help.setPermission("mobspawners.cmd.spawner.module.speed");
-		help.setSyntax(" /spawner module speed\n /ms m s");
-		help.setExample(" /spawner module speed");
-		help.save();
+		new Help("spawner module speed", "speed", "Temporary command to create speed module", false)
+			.setPermission("mobspawners.cmd.spawner.module.speed")
+			.setUsage("/spawner module speed\n /ms m s")
+			.setExample("/spawner module speed")
+			.save();
 	}
 
 	@Override

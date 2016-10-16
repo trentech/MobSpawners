@@ -19,11 +19,11 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDCreate implements CommandExecutor {
 
 	public CMDCreate() {
-		Help help = new Help("s.create", "create", " Temporary command to create mob spawner");
-		help.setPermission("mobspawners.cmd.spawner.create");
-		help.setSyntax(" /spawner create <entity>\n /ms c <entity>");
-		help.setExample(" /spawner create minecraft:zombie");
-		help.save();
+		new Help("sban create", "create", "Temporary command to create mob spawner", false)
+			.setPermission("mobspawners.cmd.spawner.create")
+			.setUsage("/spawner create <entity>\n /ms c <entity>")
+			.setExample("/spawner create minecraft:zombie")
+			.save();
 	}
 
 	@Override

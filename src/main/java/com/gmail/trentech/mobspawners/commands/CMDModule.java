@@ -2,8 +2,6 @@ package com.gmail.trentech.mobspawners.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -13,7 +11,6 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.utils.Help;
@@ -21,38 +18,18 @@ import com.gmail.trentech.mobspawners.utils.Help;
 public class CMDModule implements CommandExecutor {
 
 	public CMDModule() {
-		Help help = new Help("s.module", "module", " Subcommand for modules");
-		help.setPermission("mobspawners.cmd.spawner.module");
-		help.setSyntax(" /spawner module\n /ms m");
-		help.setExample(" /spawner module");
-		help.save();
+		new Help("spawner module", "module", "Subcommand for modules", true)
+			.setPermission("mobspawners.cmd.spawner.module")
+			.setUsage("/spawner module\n /ms m")
+			.setExample("/spawner module")
+			.save();
 	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
 
-		list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command to execute "))).onClick(TextActions.runCommand("/customspawners:spawner help")).append(Text.of(" /spawner help")).build());
-
-		for (Entry<String, Help> entry : Help.all().entrySet()) {
-			String id = entry.getKey();
-
-			if (!id.startsWith("m.")) {
-				continue;
-			}
-
-			String command = entry.getValue().getCommand();
-
-			Optional<String> optionalPermission = entry.getValue().getPermission();
-
-			if (optionalPermission.isPresent()) {
-				if (src.hasPermission(optionalPermission.get())) {
-					list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(id))).append(Text.of(" /spawner " + command)).build());
-				}
-			} else {
-				list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(id))).append(Text.of(" /spawner " + command)).build());
-			}
-		}
+		list.addAll(Help.getList(src, "spawner module"));
 
 		if (src instanceof Player) {
 			PaginationList.Builder pages = PaginationList.builder();
