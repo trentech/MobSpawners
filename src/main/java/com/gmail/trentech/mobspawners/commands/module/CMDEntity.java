@@ -12,17 +12,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDEntity implements CommandExecutor {
-
-	public CMDEntity() {
-		new Help("spawner module entity", "entity", "Temporary command to create mob module", false)
-			.setPermission("mobspawners.cmd.spawner.module.entity")
-			.setUsage("/spawner module entity <entity>\n /ms m e <entity>")
-			.setExample("/spawner module entity minecraft:creeper")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

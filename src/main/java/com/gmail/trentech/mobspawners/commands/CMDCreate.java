@@ -14,17 +14,8 @@ import org.spongepowered.api.text.format.TextColors;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.init.Items;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
-import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDCreate implements CommandExecutor {
-
-	public CMDCreate() {
-		new Help("sban create", "create", "Temporary command to create mob spawner", false)
-			.setPermission("mobspawners.cmd.spawner.create")
-			.setUsage("/spawner create <entity>\n /ms c <entity>")
-			.setExample("/spawner create minecraft:zombie")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

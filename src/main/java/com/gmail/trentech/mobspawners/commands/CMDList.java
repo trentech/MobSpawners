@@ -18,17 +18,8 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
-import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDList implements CommandExecutor {
-
-	public CMDList() {
-		new Help("spawner list", "list", "List all spawners and their locations", false)
-			.setPermission("mobspawners.cmd.spawner.list")
-			.setUsage("/spawner list\n /ms l")
-			.setExample("/spawner list")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

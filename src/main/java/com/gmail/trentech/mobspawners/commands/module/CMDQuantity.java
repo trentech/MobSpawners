@@ -12,17 +12,8 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.init.Items;
 import com.gmail.trentech.mobspawners.utils.ConfigManager;
-import com.gmail.trentech.mobspawners.utils.Help;
 
 public class CMDQuantity implements CommandExecutor {
-
-	public CMDQuantity() {
-		new Help("spawner module quantity", "quantity", "Temporary command to create quantity module", false)
-			.setPermission("mobspawners.cmd.spawner.module.quantity")
-			.setUsage("/spawner module quantity\n /ms m q")
-			.setExample("/spawner module quantity")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

@@ -5,7 +5,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.text.Text;
 
-import com.gmail.trentech.mobspawners.commands.elements.HelpElement;
 import com.gmail.trentech.mobspawners.commands.module.CMDEntity;
 import com.gmail.trentech.mobspawners.commands.module.CMDQuantity;
 import com.gmail.trentech.mobspawners.commands.module.CMDSpeed;
@@ -49,19 +48,11 @@ public class CommandManager {
 		    .executor(new CMDList())
 		    .build();
 
-	private CommandSpec cmdHelp = CommandSpec.builder()
-		    .description(Text.of(" I need help with Custom Spawners"))
-		    .permission("mobspawners.cmd.spawner")
-		    .arguments(new HelpElement(Text.of("rawCommand")))
-		    .executor(new CMDHelp())
-		    .build();
-	
 	public CommandSpec cmdSpawner = CommandSpec.builder()
 		    .permission("mobspawners.cmd.spawner")
 		    .child(cmdCreate, "create", "c")
 		    .child(cmdList, "list", "l")
 		    .child(cmdModule, "module", "m")
-		    .child(cmdHelp, "help", "h")
 		    .executor(new CMDSpawner())
 		    .build();
 }
