@@ -218,7 +218,7 @@ public class Main {
 			}
 
 			World world = spawnerLocation.getExtent();
-			ParticleEffect spawnParticle = ParticleEffect.builder().type(ParticleTypes.FLAME).count(3).build();
+			ParticleEffect spawnParticle = ParticleEffect.builder().type(ParticleTypes.FLAME).quantity(3).build();
 			List<EntityType> entities = spawner.getEntities();
 
 			Sponge.getScheduler().createTaskBuilder().delay(spawner.getTime() / 2, TimeUnit.SECONDS).interval(spawner.getTime(), TimeUnit.SECONDS).name("mobspawners:" + name + ":spawn").execute(t -> {
