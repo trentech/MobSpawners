@@ -35,7 +35,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.helpme.Help;
 import com.gmail.trentech.mobspawners.commands.CommandManager;
 import com.gmail.trentech.mobspawners.data.spawner.ImmutableSpawnerData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
@@ -47,6 +46,7 @@ import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
+import com.gmail.trentech.mobspawners.utils.CommandHelp;
 import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.Resource;
 import com.gmail.trentech.mobspawners.utils.SQLUtils;
@@ -55,7 +55,7 @@ import com.google.inject.Inject;
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = Resource.NAME, repoOwner = Resource.AUTHOR, version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true) })
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", version = "0.2.1", optional = true) })
 public class Main {
 
 	@Inject
@@ -104,54 +104,7 @@ public class Main {
 			getLog().warn("Recipe registration failed. This could be an implementation error.");
 		}
 		
-		if(Sponge.getPluginManager().isLoaded("helpme")) {
-			Help spawnerCreate = new Help("spawner create", "create", "Temporary command to create mob spawner")
-					.setPermission("mobspawners.cmd.spawner.create")
-					.addUsage("/spawner create <entity>")
-					.addUsage("/ms c <entity>")
-					.addExample("/spawner create minecraft:zombie");
-			
-			Help spawnerList = new Help("spawner list", "list", "List all spawners and their locations")
-					.setPermission("mobspawners.cmd.spawner.list")
-					.addUsage("/spawner list")
-					.addUsage("/ms ls")
-					.addExample("/spawner list");
-			
-			Help spawnerModuleEntity = new Help("spawner module entity", "entity", "Temporary command to create mob module")
-					.setPermission("mobspawners.cmd.spawner.module.entity")
-					.addUsage("/spawner module entity <entity>")
-					.addUsage("/ms m e <entity>")
-					.addExample("/spawner module entity minecraft:creeper");
-			
-			Help spawnerModuleQuantity = new Help("spawner module quantity", "quantity", "Temporary command to create quantity module")
-					.setPermission("mobspawners.cmd.spawner.module.quantity")
-					.addUsage("/spawner module quantity")
-					.addUsage("/ms m q")
-					.addExample("/spawner module quantity");
-			
-			Help spawnerModuleSpeed = new Help("spawner module speed", "speed", "Temporary command to create speed module")
-					.setPermission("mobspawners.cmd.spawner.module.speed")
-					.addUsage("/spawner module speed")
-					.addUsage("/ms m s")
-					.addExample("/spawner module speed");
-			
-			Help spawnerModule = new Help("spawner module", "module", "Subcommand for modules")
-					.setPermission("mobspawners.cmd.spawner.module")
-					.addUsage("/spawner module")
-					.addUsage("/ms m")
-					.addExample("/spawner module")
-					.addChild(spawnerModuleSpeed)
-					.addChild(spawnerModuleQuantity)
-					.addChild(spawnerModuleEntity);
-			
-			Help spawner = new Help("spawner", "spawner", "Base command for MobSpawners")
-					.setPermission("mobspawners.cmd.spawner.module")
-					.addChild(spawnerList)
-					.addChild(spawnerCreate)
-					.addChild(spawnerModule);
-			
-			Help.register(spawner);
-		}
+		CommandHelp.init();
 	}
 
 	@Listener
