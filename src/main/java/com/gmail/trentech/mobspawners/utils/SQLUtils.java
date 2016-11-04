@@ -18,7 +18,7 @@ public abstract class SQLUtils {
 			sql = Sponge.getServiceManager().provide(SqlService.class).get();
 		}
 
-		return sql.getDataSource("jdbc:mysql://localhost:3306/minecraft?user=root&password=Idontknow1");
+		return sql.getDataSource("jdbc:h2:./config/" + Resource.ID + "/data");
 	}
 
 	public static void createTables() {
