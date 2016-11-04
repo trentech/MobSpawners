@@ -16,7 +16,7 @@ public class ImmutableSpawnerData extends AbstractImmutableSingleData<Spawner, I
 		super(value, SPAWNER);
 	}
 
-	public ImmutableValue<Spawner> transmitter() {
+	public ImmutableValue<Spawner> spawner() {
 		return Sponge.getRegistry().getValueFactory().createValue(SPAWNER, getValue(), getValue()).asImmutable();
 	}
 

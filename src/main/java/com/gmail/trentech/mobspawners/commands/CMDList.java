@@ -9,7 +9,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
@@ -29,21 +29,19 @@ public class CMDList implements CommandExecutor {
 			Location<World> location = entry.getKey();
 			Spawner spawner = entry.getValue();
 
-			Text loc = Text.of(TextColors.YELLOW, "Location:", TextColors.GREEN, " w: ", TextColors.WHITE, location.getExtent().getName(), TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(), TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(), TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ(), "\n  ");
+			list.add(Text.of(TextColors.YELLOW, "Location:", TextColors.GREEN, " w: ", TextColors.WHITE, location.getExtent().getName(), TextColors.GREEN, " x: ", TextColors.WHITE, location.getBlockX(), TextColors.GREEN, " y: ", TextColors.WHITE, location.getBlockY(), TextColors.GREEN, " z: ", TextColors.WHITE, location.getBlockZ()));
 
-			Text enable = Text.of(TextColors.YELLOW, "Status: ");
 			if (spawner.isEnabled()) {
-				enable = Text.join(enable, Text.of(TextColors.GREEN, "enabled\n  "));
+				list.add(Text.of(TextColors.YELLOW, "  Status: ", Text.of(TextColors.GREEN, "enabled")));
 			} else {
-				enable = Text.join(enable, Text.of(TextColors.RED, "disabled\n  "));
+				list.add(Text.of(TextColors.YELLOW, "  Status: ", Text.of(TextColors.GREEN, "enabled")));
 			}
 
-			Text ents = Text.of(TextColors.YELLOW, "Entities: \n", TextColors.WHITE);
-			for (EntityType entityType : spawner.getEntities()) {
-				ents = Text.join(ents, Text.of("  - ", entityType.getId(), "\n"));
+			list.add(Text.of(TextColors.YELLOW, "  Entities:"));
+			
+			for (EntityArchetype snapshot : spawner.getEntities()) {
+				list.add(Text.of("  - ", snapshot.getType().getTranslation().get()));
 			}
-
-			list.add(Text.of(loc, enable, ents));
 		}
 
 		if (src instanceof Player) {

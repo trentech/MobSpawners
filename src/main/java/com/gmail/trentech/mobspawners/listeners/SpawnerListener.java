@@ -12,6 +12,7 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,6 +20,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.block.NotifyNeighborBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -31,6 +33,12 @@ import org.spongepowered.api.event.item.inventory.AffectSlotEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.scoreboard.critieria.Criteria;
+import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
+import org.spongepowered.api.scoreboard.objective.Objective;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -83,7 +91,7 @@ public class SpawnerListener {
 	}
 
 	@Listener
-	public void onBlockChangeEvent(ChangeBlockEvent.Place event, @Root Player player) {
+	public void onChangeBlockEventPlace(ChangeBlockEvent.Place event, @Root Player player) {
 		for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
 			BlockSnapshot snapshot = transaction.getFinal();
 
@@ -111,8 +119,7 @@ public class SpawnerListener {
 	}
 
 	@Listener
-	public void onBlockChangeEvent(ChangeBlockEvent.Break event) {
-
+	public void onChangeBlockEventBreak(ChangeBlockEvent.Break event) {
 		for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
 			BlockSnapshot snapshot = transaction.getOriginal();
 
@@ -231,6 +238,53 @@ public class SpawnerListener {
 		}
 	}
 
+	@Listener
+	public void onInteractBlockEventSecondary(InteractBlockEvent.Secondary event, @First Player player) {
+		Optional<Location<World>> optionalLocation = event.getTargetBlock().getLocation();
+
+		if (!optionalLocation.isPresent()) {
+			return;
+		}
+		Location<World> location = optionalLocation.get();
+
+		Optional<Spawner> optionalSpawner = Spawner.get(location);
+
+		if (!optionalSpawner.isPresent()) {
+			return;
+		}
+		Spawner spawner = optionalSpawner.get();
+
+		Optional<ItemStack> optionalItemStack = player.getItemInHand(HandTypes.MAIN_HAND);
+
+		if (optionalItemStack.isPresent()) {
+			return;
+		}
+		
+		int score = spawner.getEntities().size() + 2;
+		
+		Scoreboard scoreboard = Scoreboard.builder().build();
+
+		Objective objective = Objective.builder().displayName(Text.of(TextColors.GREEN, "     Spawner Info     ")).name("spawnerinfo").criterion(Criteria.DUMMY).build();
+
+		objective.getOrCreateScore(Text.of(TextColors.GREEN, "Speed: ", TextColors.WHITE, spawner.getTime(), " seconds")).setScore(score--);
+		objective.getOrCreateScore(Text.of(TextColors.GREEN, "Quantity: ", TextColors.WHITE, spawner.getAmount())).setScore(score--);
+		
+		objective.getOrCreateScore(Text.of(TextColors.GREEN, "Entities")).setScore(score--);
+
+		for(EntityArchetype snapshot : spawner.getEntities()) {
+			objective.getOrCreateScore(Text.of(TextColors.YELLOW, " - ", snapshot.getType().getTranslation())).setScore(score--);
+		}
+
+		scoreboard.addObjective(objective);
+		scoreboard.updateDisplaySlot(objective, DisplaySlots.SIDEBAR);
+
+		player.setScoreboard(scoreboard);
+
+		Sponge.getScheduler().createTaskBuilder().async().delayTicks(100).execute(runnable -> {
+			player.setScoreboard(Scoreboard.builder().build());
+		}).submit(Main.getPlugin());
+	}
+	
 	public static void checkItemInHand(Player player) {
 		Optional<ItemStack> optionalItemStack = player.getItemInHand(HandTypes.MAIN_HAND);
 

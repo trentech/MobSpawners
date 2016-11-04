@@ -1,9 +1,6 @@
 package com.gmail.trentech.mobspawners.commands;
 
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.EntityType;
-import org.spongepowered.api.text.Text;
 
 import com.gmail.trentech.mobspawners.commands.module.CMDEntity;
 import com.gmail.trentech.mobspawners.commands.module.CMDQuantity;
@@ -13,8 +10,6 @@ public class CommandManager {
 	
 	private CommandSpec cmdEntity = CommandSpec.builder()
 		    .permission("mobspawners.cmd.spawner.module.entity")
-		    .arguments()
-		    .arguments(GenericArguments.catalogedElement(Text.of("entity"), EntityType.class))
 		    .executor(new CMDEntity())
 		    .build();
 	
@@ -38,8 +33,6 @@ public class CommandManager {
 	
 	private CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("mobspawners.cmd.spawner.create")
-		    .arguments()
-		    .arguments(GenericArguments.catalogedElement(Text.of("entity"), EntityType.class))
 		    .executor(new CMDCreate())
 		    .build();
 	

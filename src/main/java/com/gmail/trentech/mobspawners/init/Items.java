@@ -6,7 +6,7 @@ import java.util.List;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.DyeColors;
-import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.item.Enchantments;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -58,14 +58,39 @@ public class Items {
 		return itemStack;
 	}
 
-	public static ItemStack getEntityModule(EntityType type) {
+	public static ItemStack getEntityModule() {
 		ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.PAPER).build();
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Entity Module"));
 
+		List<ItemEnchantment> enchantments = new ArrayList<>();
+		enchantments.add(new ItemEnchantment(Enchantments.FLAME, 1));
+
+		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
+		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
+
+		return itemStack;
+	}
+
+	public static ItemStack getSpawner(Spawner spawner) {
+		ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.STAINED_GLASS).build();
+		
+		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
+		itemStack.offer(Keys.DYE_COLOR, DyeColors.BLACK);
+		
+		itemStack.offer(new SpawnerData(spawner));
 		List<Text> lore = new ArrayList<>();
 
-		lore.add(Text.of(TextColors.GREEN, "Entity: ", TextColors.WHITE, type.getId()));
+		if (!spawner.getEntities().isEmpty()) {
+			lore.add(Text.of(TextColors.GREEN, "Entities:"));
+
+			for (EntityArchetype snapshot : spawner.getEntities()) {
+				lore.add(Text.of(TextColors.YELLOW, "  - ", snapshot.getType().getTranslation().get()));
+			}
+		}
+
+		lore.add(Text.of(TextColors.GREEN, "Time: ", TextColors.WHITE, spawner.getTime(), " seconds"));
+		lore.add(Text.of(TextColors.GREEN, "Quantity: ", TextColors.WHITE, spawner.getAmount()));
 
 		List<ItemEnchantment> enchantments = new ArrayList<>();
 		enchantments.add(new ItemEnchantment(Enchantments.FLAME, 1));
@@ -74,40 +99,6 @@ public class Items {
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
 
 		itemStack.offer(Keys.ITEM_LORE, lore);
-
-		return itemStack;
-	}
-
-	public static ItemStack getSpawner(Spawner spawner) {
-		ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.STAINED_GLASS).build();
-
-		//DyeableData dyeableData = Sponge.getDataManager().getManipulatorBuilder(DyeableData.class).get().create();
-		//dyeableData.type().set(DyeColors.BLACK);
-		itemStack.offer(Keys.DYE_COLOR, DyeColors.BLACK);
-		//itemStack.offer(dyeableData);
-		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
-
-		if (!spawner.getEntities().isEmpty()) {
-			itemStack.offer(new SpawnerData(spawner));
-			List<Text> lore = new ArrayList<>();
-
-			lore.add(Text.of(TextColors.GREEN, "Entities:"));
-
-			for (EntityType type : spawner.getEntities()) {
-				lore.add(Text.of(TextColors.YELLOW, "  - ", type.getId()));
-			}
-
-			lore.add(Text.of(TextColors.GREEN, "Time: ", TextColors.WHITE, spawner.getTime(), " seconds"));
-			lore.add(Text.of(TextColors.GREEN, "Quantity: ", TextColors.WHITE, spawner.getAmount()));
-
-			List<ItemEnchantment> enchantments = new ArrayList<>();
-			enchantments.add(new ItemEnchantment(Enchantments.FLAME, 1));
-
-			itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
-			itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
-
-			itemStack.offer(Keys.ITEM_LORE, lore);
-		}
 
 		return itemStack;
 	}
