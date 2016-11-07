@@ -35,8 +35,6 @@ import org.spongepowered.api.world.World;
 import com.gmail.trentech.mobspawners.commands.CommandManager;
 import com.gmail.trentech.mobspawners.data.LocationSerializable;
 import com.gmail.trentech.mobspawners.data.entity.EntityData;
-import com.gmail.trentech.mobspawners.data.entity.ImmutableEntityData;
-import com.gmail.trentech.mobspawners.data.spawner.ImmutableSpawnerData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
 import com.gmail.trentech.mobspawners.init.Recipes;
@@ -77,6 +75,11 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Sponge.getDataManager().registerBuilder(LocationSerializable.class, new LocationSerializable.Builder());
+		Sponge.getDataManager().register(EntityData.class, EntityData.Immutable.class, new EntityData.Builder());
+		Sponge.getDataManager().registerBuilder(Spawner.class, new Spawner.Builder());
+		Sponge.getDataManager().register(SpawnerData.class, SpawnerData.Immutable.class, new SpawnerData.Builder());
 	}
 
 	@Listener
@@ -85,11 +88,6 @@ public class Main {
 
 		SQLUtils.createTables();
 
-		Sponge.getDataManager().registerBuilder(LocationSerializable.class, new LocationSerializable.Builder());
-		Sponge.getDataManager().register(EntityData.class, ImmutableEntityData.class, new EntityData.Builder());
-		Sponge.getDataManager().registerBuilder(Spawner.class, new Spawner.Builder());
-		Sponge.getDataManager().register(SpawnerData.class, ImmutableSpawnerData.class, new SpawnerData.Builder());
-		
 		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
 		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
 		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
