@@ -8,18 +8,22 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.blockray.BlockRay;
+import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.data.entity.EntityData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 
@@ -70,6 +74,50 @@ public class EntityModuleListener {
 	}
 	
 	@Listener
+	public void onInteractEntityEventSecondary(InteractBlockEvent.Secondary event, @Root Player player) {
+		Optional<ItemStack> optionalItemStack = player.getItemInHand(HandTypes.MAIN_HAND);
+
+		if (!optionalItemStack.isPresent()) {
+			return;
+		}
+		ItemStack itemStack = optionalItemStack.get();
+		
+		Optional<Text> optionalDisplayName = itemStack.get(Keys.DISPLAY_NAME);
+
+		if (!optionalDisplayName.isPresent()) {
+			return;
+		}
+		
+		if (!optionalDisplayName.get().toPlain().equalsIgnoreCase("Entity Module")) {
+			return;
+		}
+
+		Optional<EntityData> optionalEntityData = itemStack.get(EntityData.class);
+		
+		if(!optionalEntityData.isPresent()) {
+			return;
+		}
+		EntityData entityData = optionalEntityData.get();
+
+		BlockRay<World> blockRay = BlockRay.from(player).distanceLimit(5).stopFilter(BlockRay.onlyAirFilter()).build();
+
+		Optional<BlockRayHit<World>> optionalHit = blockRay.end();
+
+		if (optionalHit.isPresent()) {
+			Location<World> location = optionalHit.get().getLocation();
+			
+			entityData.entity().get().apply(location, Cause.of(NamedCause.source(Main.instance())));
+
+			ItemStack copy = itemStack.copy();
+
+			copy.remove(Keys.ITEM_LORE);
+			copy.remove(EntityData.class);
+
+			player.getInventory().query(itemStack).set(copy);
+		}
+	}
+	
+	@Listener
 	public void onInteractBlockEventEventPrimary(InteractBlockEvent.Primary event, @First Player player) {
 		Optional<Location<World>> optionalLocation = event.getTargetBlock().getLocation();
 
@@ -114,9 +162,12 @@ public class EntityModuleListener {
 		spawner.addEntity(entityData.entity().get());
 		spawner.update();
 
-		if(!player.gameMode().get().equals(GameModes.CREATIVE)) {
-			player.getInventory().query(itemStack).poll(1);
-		}
+		ItemStack copy = itemStack.copy();
+
+		copy.remove(Keys.ITEM_LORE);
+		copy.remove(EntityData.class);
+
+		player.getInventory().query(itemStack).set(copy);
 
 		player.sendMessage(Text.of(TextColors.GREEN, "Entity module inserted"));
 	}

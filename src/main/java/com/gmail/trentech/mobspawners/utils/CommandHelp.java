@@ -2,9 +2,9 @@ package com.gmail.trentech.mobspawners.utils;
 
 import org.spongepowered.api.Sponge;
 
-import com.gmail.trentech.helpme.help.Argument;
-import com.gmail.trentech.helpme.help.Help;
-import com.gmail.trentech.helpme.help.Usage;
+import com.gmail.trentech.pjc.help.Argument;
+import com.gmail.trentech.pjc.help.Help;
+import com.gmail.trentech.pjc.help.Usage;
 
 public class CommandHelp {
 

@@ -1,6 +1,6 @@
 package com.gmail.trentech.mobspawners.data.entity;
 
-import static com.gmail.trentech.mobspawners.data.Keys.ENTITY_ARCHE;
+import static com.gmail.trentech.mobspawners.data.DataKeys.ENTITY_ARCHE;
 
 import java.util.Optional;
 

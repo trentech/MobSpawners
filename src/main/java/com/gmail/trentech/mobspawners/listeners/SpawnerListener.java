@@ -47,7 +47,7 @@ import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.mobspawners.utils.ConfigManager;
+import com.gmail.trentech.pjc.core.ConfigManager;
 
 public class SpawnerListener {
 
@@ -55,7 +55,7 @@ public class SpawnerListener {
 
 	@Listener
 	public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-		if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
+		if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 			for (Spawner spawner : Spawner.get(player)) {
 				if (spawner.isEnabled()) {
 					Main.instance().spawn(spawner);
@@ -67,9 +67,9 @@ public class SpawnerListener {
 
 	@Listener
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-		if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
+		if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 			for (Spawner spawner : Spawner.get(player)) {
-				if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
+				if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 					Location<World> location = spawner.getLocation().get();
 					String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
@@ -109,7 +109,7 @@ public class SpawnerListener {
 			if (cache.containsKey(player.getUniqueId())) {
 				Spawner spawner = cache.get(player.getUniqueId()).spawner().get();
 
-				spawner.setLocation(location);
+				spawner.setLocation(Optional.of(location));
 				spawner.setOwner(player);
 				spawner.create();
 
@@ -272,7 +272,13 @@ public class SpawnerListener {
 		objective.getOrCreateScore(Text.of(TextColors.GREEN, "Entities")).setScore(score--);
 
 		for(EntityArchetype snapshot : spawner.getEntities()) {
-			objective.getOrCreateScore(Text.of(TextColors.YELLOW, " - ", snapshot.getType().getTranslation())).setScore(score--);
+			Optional<Text> displayName = snapshot.get(Keys.DISPLAY_NAME);
+			
+			if(displayName.isPresent()) {	
+				objective.getOrCreateScore(Text.of(TextColors.YELLOW, " - ", displayName.get())).setScore(score--);
+			} else {
+				objective.getOrCreateScore(Text.of(TextColors.YELLOW, " - ", snapshot.getType().getTranslation())).setScore(score--);
+			}		
 		}
 
 		scoreboard.addObjective(objective);

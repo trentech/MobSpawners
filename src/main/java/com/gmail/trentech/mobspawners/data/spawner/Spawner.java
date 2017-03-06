@@ -8,12 +8,16 @@ import static com.gmail.trentech.mobspawners.data.DataQueries.OWNER;
 import static com.gmail.trentech.mobspawners.data.DataQueries.RANGE;
 import static com.gmail.trentech.mobspawners.data.DataQueries.TIME;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
@@ -26,11 +30,14 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.data.DataQueries;
 import com.gmail.trentech.mobspawners.data.LocationSerializable;
-import com.gmail.trentech.mobspawners.utils.ConfigManager;
+import com.gmail.trentech.pjc.core.ConfigManager;
+import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class Spawner implements DataSerializable {
 
@@ -43,7 +50,7 @@ public class Spawner implements DataSerializable {
 	protected UUID owner = UUID.randomUUID();
 
 	public Spawner() {
-		ConfigurationNode config = ConfigManager.get().getConfig();
+		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 
 		this.amount = config.getNode("settings", "spawn-amount").getInt();
 		this.time = config.getNode("settings", "time").getInt();
@@ -73,12 +80,8 @@ public class Spawner implements DataSerializable {
 		return location;
 	}
 
-	public void setLocation(Location<World> location) {
-		if (location == null) {
-			this.location = Optional.empty();
-		}
-
-		this.location = Optional.of(location);
+	public void setLocation(Optional<Location<World>> location) {
+		this.location = location;
 	}
 
 	public List<EntityArchetype> getEntities() {
@@ -151,7 +154,13 @@ public class Spawner implements DataSerializable {
 		DataContainer container = new MemoryDataContainer().set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());
 
 		if (!entities.isEmpty()) {
-			container.set(DataQueries.ENTITIES, entities);
+			List<String> list = new ArrayList<>();
+			
+			for(EntityArchetype entity : entities) {
+				list.add(serialize(entity));
+			}
+			
+			container.set(DataQueries.ENTITIES, list);
 		}
 
 		if (location.isPresent()) {
@@ -173,7 +182,10 @@ public class Spawner implements DataSerializable {
 				List<EntityArchetype> entities = new ArrayList<>();
 
 				if (container.contains(ENTITIES)) {
-					entities = container.getSerializableList(ENTITIES, EntityArchetype.class).get();
+					for(String entry : container.getStringList(ENTITIES).get()) {
+						entities.add(deserialize(entry));
+					}
+					//entities = container.getSerializableList(ENTITIES, EntityArchetype.class).get();
 				}
 
 				int amount = container.getInt(AMOUNT).get();
@@ -224,5 +236,31 @@ public class Spawner implements DataSerializable {
 	
 	public static ConcurrentHashMap<Location<World>, Spawner> all() {
 		return SpawnerDB.all();
+	}
+	
+	private static String serialize(EntityArchetype entity) {
+		try {
+			StringWriter sink = new StringWriter();
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
+			ConfigurationNode node = loader.createEmptyNode();
+			node.setValue(TypeToken.of(EntityArchetype.class), entity);
+			loader.save(node);
+			return sink.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static EntityArchetype deserialize(String item) {
+		try {
+			StringReader source = new StringReader(item);
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
+			ConfigurationNode node = loader.load();
+			return node.getValue(TypeToken.of(EntityArchetype.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

@@ -2,25 +2,24 @@ package com.gmail.trentech.mobspawners.data.spawner;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.Main;
-import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.SQLUtils;
+import com.gmail.trentech.pjc.core.ConfigManager;
+import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -43,7 +42,7 @@ public class SpawnerDB extends SQLUtils {
 				cache.put(spawner.getLocation().get(), spawner);
 
 				if (spawner.isEnabled()) {
-					if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
+					if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 						if (Sponge.getServer().getPlayer(spawner.getOwner()).isPresent()) {
 							Main.instance().spawn(spawner);
 						}
@@ -82,7 +81,7 @@ public class SpawnerDB extends SQLUtils {
 
 				cache.put(location, spawner);
 
-				if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
+				if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 					if (Sponge.getServer().getPlayer(spawner.getOwner()).isPresent()) {
 						Main.instance().spawn(spawner);
 					}
@@ -121,7 +120,7 @@ public class SpawnerDB extends SQLUtils {
 				}
 
 				if (spawner.isEnabled()) {
-					if (ConfigManager.get().getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
+					if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
 						if (Sponge.getServer().getPlayer(spawner.getOwner()).isPresent()) {
 							Main.instance().spawn(spawner);
 						}
@@ -158,7 +157,7 @@ public class SpawnerDB extends SQLUtils {
 					}
 				}
 
-				spawner.setLocation(null);
+				spawner.setLocation(Optional.empty());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -167,11 +166,13 @@ public class SpawnerDB extends SQLUtils {
 	
 	private static String serialize(Spawner spawner) {
 		try {
-			ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(spawner.toContainer());
-			StringWriter stringWriter = new StringWriter();
-			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
-			return stringWriter.toString();
-		} catch (IOException e) {
+			StringWriter sink = new StringWriter();
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
+			ConfigurationNode node = loader.createEmptyNode();
+			node.setValue(TypeToken.of(Spawner.class), spawner);
+			loader.save(node);
+			return sink.toString();
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -179,10 +180,11 @@ public class SpawnerDB extends SQLUtils {
 
 	private static Spawner deserialize(String item) {
 		try {
-			ConfigurationNode node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
-			DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
-			return Sponge.getDataManager().deserialize(Spawner.class, dataView).get();
-		} catch (IOException e) {
+			StringReader source = new StringReader(item);
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
+			ConfigurationNode node = loader.load();
+			return node.getValue(TypeToken.of(Spawner.class));
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}

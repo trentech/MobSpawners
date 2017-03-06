@@ -1,6 +1,6 @@
 package com.gmail.trentech.mobspawners.data.spawner;
 
-import static com.gmail.trentech.mobspawners.data.Keys.SPAWNER_DATA;
+import static com.gmail.trentech.mobspawners.data.DataKeys.SPAWNER_DATA;
 
 import java.util.Optional;
 

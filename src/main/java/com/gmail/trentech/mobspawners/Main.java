@@ -37,13 +37,11 @@ import com.gmail.trentech.mobspawners.data.LocationSerializable;
 import com.gmail.trentech.mobspawners.data.entity.EntityData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
-import com.gmail.trentech.mobspawners.init.Recipes;
+import com.gmail.trentech.mobspawners.init.Common;
 import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
-import com.gmail.trentech.mobspawners.utils.CommandHelp;
-import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.Resource;
 import com.gmail.trentech.mobspawners.utils.SQLUtils;
 import com.google.inject.Inject;
@@ -51,7 +49,7 @@ import com.google.inject.Inject;
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = Resource.NAME, repoOwner = Resource.AUTHOR, version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", version = "0.2.1", optional = true) })
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "pjc", optional = false) })
 public class Main {
 
 	@Inject
@@ -84,10 +82,10 @@ public class Main {
 
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
-		ConfigManager.init();
-
+		Common.initConfig();
+		
 		SQLUtils.createTables();
-
+		
 		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
 		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
 		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
@@ -95,13 +93,9 @@ public class Main {
 		
 		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "ms");
 
-		try {
-			Recipes.register();
-		} catch (Exception e) {
-			getLog().warn("Recipe registration failed. This could be an implementation error.");
-		}
+		Common.initHelp();
 		
-		CommandHelp.init();
+		// Common.initRecipes();
 	}
 
 	@Listener
@@ -118,19 +112,9 @@ public class Main {
 		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
 		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
 		
-		try {
-			Recipes.remove();
-		} catch (Exception e) {
-			getLog().warn("Recipe registration failed. This could be an implementation error.");
-		}
+		Common.initConfig();
 		
-		ConfigManager.init();
-		
-		try {
-			Recipes.register();
-		} catch (Exception e) {
-			getLog().warn("Recipe registration failed. This could be an implementation error.");
-		}
+		// Common.initRecipes();
 	}
 	
 	public Logger getLog() {
@@ -217,7 +201,7 @@ public class Main {
 		}
 	}
 
-	private Location<World> getRandomLocation(Location<World> location, int radius) {
+	public Location<World> getRandomLocation(Location<World> location, int radius) {
 		TeleportHelper teleportHelper = Sponge.getGame().getTeleportHelper();
 
 		for (int i = 0; i < 19; i++) {
