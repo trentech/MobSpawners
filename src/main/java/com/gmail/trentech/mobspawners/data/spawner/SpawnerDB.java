@@ -17,22 +17,23 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.Main;
-import com.gmail.trentech.mobspawners.utils.SQLUtils;
 import com.gmail.trentech.pjc.core.ConfigManager;
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-public class SpawnerDB extends SQLUtils {
+public class SpawnerDB {
 
 	private static ConcurrentHashMap<Location<World>, Spawner> cache = new ConcurrentHashMap<>();
 	
 	protected static void init() {
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Spawners");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("SPAWNERS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -68,9 +69,10 @@ public class SpawnerDB extends SQLUtils {
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 			try {
-				Connection connection = getDataSource().getConnection();
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into Spawners (Name, Spawner) VALUES (?, ?)");
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("SPAWNERS") + " (Name, Spawner) VALUES (?, ?)");
 
 				statement.setString(1, name);
 				statement.setString(2, serialize(spawner));
@@ -100,9 +102,10 @@ public class SpawnerDB extends SQLUtils {
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 			try {
-				Connection connection = getDataSource().getConnection();
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE Spawners SET Spawner = ? WHERE Name = ?");
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("SPAWNERS") + " SET Spawner = ? WHERE Name = ?");
 
 				statement.setString(1, serialize(spawner));
 				statement.setString(2, name);
@@ -140,9 +143,10 @@ public class SpawnerDB extends SQLUtils {
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 			try {
-				Connection connection = getDataSource().getConnection();
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("DELETE from Spawners WHERE Name = ?");
+				PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("SPAWNERS") + " WHERE Name = ?");
 
 				statement.setString(1, name);
 				statement.executeUpdate();

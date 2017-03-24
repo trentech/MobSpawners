@@ -3,6 +3,7 @@ package com.gmail.trentech.mobspawners;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,7 +44,7 @@ import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
 import com.gmail.trentech.mobspawners.utils.Resource;
-import com.gmail.trentech.mobspawners.utils.SQLUtils;
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
@@ -84,7 +85,12 @@ public class Main {
 	public void onInitialization(GameInitializationEvent event) {
 		Common.initConfig();
 		
-		SQLUtils.createTables();
+		HashMap<String, String> hash = new HashMap<>();
+		
+		hash.put("Name", "TEXT");
+		hash.put("Spawner", "TEXT");
+
+		SQLManager.get(getPlugin()).createTable("SPAWNERS", hash);
 		
 		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
 		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
