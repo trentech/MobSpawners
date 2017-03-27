@@ -3,7 +3,6 @@ package com.gmail.trentech.mobspawners;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,7 +32,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.mobspawners.commands.CommandManager;
 import com.gmail.trentech.mobspawners.data.LocationSerializable;
 import com.gmail.trentech.mobspawners.data.entity.EntityData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
@@ -44,7 +42,6 @@ import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
 import com.gmail.trentech.mobspawners.utils.Resource;
-import com.gmail.trentech.pjc.core.SQLManager;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
@@ -84,23 +81,7 @@ public class Main {
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
 		Common.initConfig();
-		
-		HashMap<String, String> hash = new HashMap<>();
-		
-		hash.put("Name", "TEXT");
-		hash.put("Spawner", "TEXT");
-
-		SQLManager.get(getPlugin()).createTable("SPAWNERS", hash);
-		
-		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
-		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
-		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
-		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
-		
-		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "ms");
-
-		Common.initHelp();
-		
+		Common.initData();
 		// Common.initRecipes();
 	}
 
