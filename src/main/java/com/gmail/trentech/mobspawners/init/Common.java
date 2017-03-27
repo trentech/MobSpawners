@@ -140,6 +140,9 @@ public class Common {
 		if (config.getNode("settings", "quantity-module-increment").isVirtual()) {
 			config.getNode("settings", "quantity-module-increment").setValue(1);
 		}
+		if (config.getNode("settings", "sql", "database").isVirtual()) {
+			config.getNode("settings", "sql", "database").setValue(Main.getPlugin().getId());
+		}
 		
 		configManager.save();
 	}
