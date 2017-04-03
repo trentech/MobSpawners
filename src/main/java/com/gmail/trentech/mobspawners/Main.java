@@ -29,7 +29,6 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.data.LocationSerializable;
@@ -42,6 +41,7 @@ import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
 import com.gmail.trentech.mobspawners.utils.Resource;
+import com.gmail.trentech.pjc.core.TeleportManager;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
@@ -189,13 +189,11 @@ public class Main {
 	}
 
 	public Location<World> getRandomLocation(Location<World> location, int radius) {
-		TeleportHelper teleportHelper = Sponge.getGame().getTeleportHelper();
-
 		for (int i = 0; i < 19; i++) {
 			double x = random.nextDouble() * (radius * 2) - radius;
             double z = random.nextDouble() * (radius * 2) - radius;
-
-			Optional<Location<World>> optionalLocation = teleportHelper.getSafeLocation(location.add(x, 0, z));
+            
+			Optional<Location<World>> optionalLocation = TeleportManager.getSafeLocation(location.add(x, 0, z));
 
 			if (!optionalLocation.isPresent()) {
 				continue;
