@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.EntityArchetype;
@@ -73,9 +74,15 @@ public class Main {
 		}
 		
 		Sponge.getDataManager().registerBuilder(LocationSerializable.class, new LocationSerializable.Builder());
-		Sponge.getDataManager().register(EntityData.class, EntityData.Immutable.class, new EntityData.Builder());
+
+		DataRegistration.builder().dataClass(EntityData.class).immutableClass(EntityData.Immutable.class)
+			.builder(new EntityData.Builder()).dataName("Entity").manipulatorId("mobspawners_entity").buildAndRegister(Main.getPlugin());
+		
 		Sponge.getDataManager().registerBuilder(Spawner.class, new Spawner.Builder());
-		Sponge.getDataManager().register(SpawnerData.class, SpawnerData.Immutable.class, new SpawnerData.Builder());
+		
+		DataRegistration.builder().dataClass(SpawnerData.class).immutableClass(SpawnerData.Immutable.class)
+			.builder(new SpawnerData.Builder()).dataName("Spawner").manipulatorId("mobspawners_spawner").buildAndRegister(Main.getPlugin());
+
 	}
 
 	@Listener
