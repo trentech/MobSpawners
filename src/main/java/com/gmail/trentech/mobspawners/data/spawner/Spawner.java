@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.EntityArchetype;
@@ -151,7 +150,7 @@ public class Spawner implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		DataContainer container = new MemoryDataContainer().set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());
+		DataContainer container = DataContainer.createNew().set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());
 
 		if (!entities.isEmpty()) {
 			List<String> list = new ArrayList<>();

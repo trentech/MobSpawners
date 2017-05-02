@@ -8,7 +8,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableSingleData;
 import org.spongepowered.api.data.manipulator.mutable.common.AbstractSingleData;
@@ -77,7 +76,7 @@ public class SpawnerData extends AbstractSingleData<Spawner, SpawnerData, Immuta
 	
 	@Override
 	public DataContainer toContainer() {
-		return new MemoryDataContainer().set(SPAWNER_DATA, getValue());
+		return DataContainer.createNew().set(SPAWNER_DATA, getValue());
 	}
 
 	public static class Immutable extends AbstractImmutableSingleData<Spawner, Immutable, SpawnerData> {

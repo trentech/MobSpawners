@@ -8,7 +8,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableSingleData;
 import org.spongepowered.api.data.manipulator.mutable.common.AbstractSingleData;
@@ -71,7 +70,7 @@ public class EntityData extends AbstractSingleData<EntityArchetype, EntityData, 
 	
 	@Override
 	public DataContainer toContainer() {
-		return new MemoryDataContainer().set(ENTITY_ARCHE, getValue());
+		return DataContainer.createNew().set(ENTITY_ARCHE, getValue());
 	}
 
 	public static class Immutable extends AbstractImmutableSingleData<EntityArchetype, Immutable, EntityData> {
