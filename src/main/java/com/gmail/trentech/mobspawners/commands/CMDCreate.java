@@ -5,7 +5,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -24,9 +23,7 @@ public class CMDCreate implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		EntityType entity = args.<EntityType>getOne("entity").get();
-
-		ItemStack itemStack = Items.getSpawner(new Spawner(entity));
+		ItemStack itemStack = Items.getSpawner(new Spawner());
 
 		player.getInventory().offer(itemStack);
 

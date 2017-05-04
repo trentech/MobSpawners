@@ -13,15 +13,13 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -32,30 +30,25 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.mobspawners.commands.CommandManager;
-import com.gmail.trentech.mobspawners.data.spawner.ImmutableSpawnerData;
+import com.gmail.trentech.mobspawners.data.LocationSerializable;
+import com.gmail.trentech.mobspawners.data.entity.EntityData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
-import com.gmail.trentech.mobspawners.data.spawner.SpawnerBuilder;
 import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
-import com.gmail.trentech.mobspawners.data.spawner.SpawnerDataManipulatorBuilder;
-import com.gmail.trentech.mobspawners.init.Recipes;
+import com.gmail.trentech.mobspawners.init.Common;
 import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 import com.gmail.trentech.mobspawners.listeners.SpeedModuleListener;
-import com.gmail.trentech.mobspawners.utils.CommandHelp;
-import com.gmail.trentech.mobspawners.utils.ConfigManager;
 import com.gmail.trentech.mobspawners.utils.Resource;
-import com.gmail.trentech.mobspawners.utils.SQLUtils;
+import com.gmail.trentech.pjc.core.TeleportManager;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = Resource.NAME, repoOwner = Resource.AUTHOR, version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", version = "0.2.1", optional = true) })
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "pjc", optional = false) })
 public class Main {
 
 	@Inject
@@ -65,7 +58,6 @@ public class Main {
 	@Inject
 	private Logger log;
 	private ThreadLocalRandom random = ThreadLocalRandom.current();
-	private ParticleEffect particle = ParticleEffect.builder().type(ParticleTypes.FLAME).build();
 
 	private static PluginContainer plugin;
 	private static Main instance;
@@ -80,31 +72,24 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Sponge.getDataManager().registerBuilder(LocationSerializable.class, new LocationSerializable.Builder());
+
+		DataRegistration.builder().dataClass(EntityData.class).immutableClass(EntityData.Immutable.class)
+			.builder(new EntityData.Builder()).dataName("Entity").manipulatorId("mobspawners_entity").buildAndRegister(Main.getPlugin());
+		
+		Sponge.getDataManager().registerBuilder(Spawner.class, new Spawner.Builder());
+		
+		DataRegistration.builder().dataClass(SpawnerData.class).immutableClass(SpawnerData.Immutable.class)
+			.builder(new SpawnerData.Builder()).dataName("Spawner").manipulatorId("mobspawners_spawner").buildAndRegister(Main.getPlugin());
+
 	}
 
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
-		ConfigManager.init();
-		ConfigManager.init("recipes");
-
-		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
-		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
-		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
-		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
-
-		Sponge.getDataManager().registerBuilder(Spawner.class, new SpawnerBuilder());
-		Sponge.getDataManager().register(SpawnerData.class, ImmutableSpawnerData.class, new SpawnerDataManipulatorBuilder());
-		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "ms");
-
-		SQLUtils.createTables();
-
-		try {
-			Recipes.register();
-		} catch (Exception e) {
-			getLog().warn("Recipe registration failed. This could be an implementation error.");
-		}
-		
-		CommandHelp.init();
+		Common.initConfig();
+		Common.initData();
+		// Common.initRecipes();
 	}
 
 	@Listener
@@ -121,20 +106,9 @@ public class Main {
 		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
 		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
 		
-		try {
-			Recipes.remove();
-		} catch (Exception e) {
-			getLog().warn("Recipe registration failed. This could be an implementation error.");
-		}
+		Common.initConfig();
 		
-		ConfigManager.init();
-		ConfigManager.init("recipes");
-		
-		try {
-			Recipes.register();
-		} catch (Exception e) {
-			getLog().warn("Recipe registration failed. This could be an implementation error.");
-		}
+		// Common.initRecipes();
 	}
 	
 	public Logger getLog() {
@@ -172,28 +146,25 @@ public class Main {
 
 			World world = spawnerLocation.getExtent();
 			ParticleEffect spawnParticle = ParticleEffect.builder().type(ParticleTypes.FLAME).quantity(3).build();
-			List<EntityType> entities = spawner.getEntities();
+			List<EntityArchetype> entities = spawner.getEntities();
 
 			Sponge.getScheduler().createTaskBuilder().delay(spawner.getTime() / 2, TimeUnit.SECONDS).interval(spawner.getTime(), TimeUnit.SECONDS).name("mobspawners:" + name + ":spawn").execute(t -> {
-				if (world.isLoaded()) {
+				if (world.isLoaded() && entities.size() != 0) {
 					Optional<Chunk> optionalChunk = world.getChunk(spawnerLocation.getChunkPosition());
 
 					if (optionalChunk.isPresent() && optionalChunk.get().isLoaded()) {
 						int amount = random.nextInt(spawner.getAmount()) + 1;
 
 						for (int i = 0; i < amount; i++) {
-
 							location.set(getRandomLocation(spawnerLocation, spawner.getRadius()));
+							
+							EntityArchetype snapshot = entities.get(random.nextInt(entities.size()));
 
-							EntityType entityType = entities.get(random.nextInt(entities.size()));
-
-							Entity entity = location.get().getExtent().createEntity(entityType, location.get().getPosition());
-
-							location.get().getExtent().spawnEntity(entity, Cause.of(NamedCause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())));
+							snapshot.apply(location.get(), Cause.of(NamedCause.source(this)));
 
 							for (int x = 0; x < 9; x++) {
-								location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
-								location.get().getExtent().spawnParticles(particle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
+								location.get().getExtent().spawnParticles(spawnParticle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
+								location.get().getExtent().spawnParticles(spawnParticle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
 
 								spawnerLocation.getExtent().spawnParticles(spawnParticle, spawnerLocation.getPosition().add(random.nextDouble(), random.nextDouble(), random.nextDouble()));
 								spawnerLocation.getExtent().spawnParticles(spawnParticle, spawnerLocation.getPosition().add(random.nextDouble(), random.nextDouble(), random.nextDouble()));
@@ -205,12 +176,18 @@ public class Main {
 			}).submit(getPlugin());
 
 			Sponge.getScheduler().createTaskBuilder().interval(70, TimeUnit.MILLISECONDS).name("mobspawners:" + name + ":particle").execute(t -> {
-				ParticleEffect particle = ParticleEffect.builder().type(ParticleTypes.FLAME).build();
-
 				if (world.isLoaded()) {
 					Optional<Chunk> optionalChunk = world.getChunk(spawnerLocation.getChunkPosition());
 
 					if (optionalChunk.isPresent() && optionalChunk.get().isLoaded()) {
+						ParticleEffect particle;
+						
+						if(entities.size() == 0) {
+							particle = ParticleEffect.builder().type(ParticleTypes.SMOKE).build();
+						} else {
+							particle = ParticleEffect.builder().type(ParticleTypes.FLAME).build();
+						}
+						
 						world.spawnParticles(particle, spawnerLocation.getPosition().add(random.nextDouble(), random.nextDouble(), random.nextDouble()));
 					}
 				}
@@ -218,14 +195,12 @@ public class Main {
 		}
 	}
 
-	private Location<World> getRandomLocation(Location<World> location, int radius) {
-		TeleportHelper teleportHelper = Sponge.getGame().getTeleportHelper();
-
+	public Location<World> getRandomLocation(Location<World> location, int radius) {
 		for (int i = 0; i < 19; i++) {
 			double x = random.nextDouble() * (radius * 2) - radius;
             double z = random.nextDouble() * (radius * 2) - radius;
-
-			Optional<Location<World>> optionalLocation = teleportHelper.getSafeLocation(location.add(x, 0, z));
+            
+			Optional<Location<World>> optionalLocation = TeleportManager.getSafeLocation(location.add(x, 0, z));
 
 			if (!optionalLocation.isPresent()) {
 				continue;

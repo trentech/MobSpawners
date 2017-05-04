@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
@@ -20,7 +21,7 @@ import com.gmail.trentech.mobspawners.data.spawner.Spawner;
 public class SpeedModuleListener {
 
 	@Listener
-	public void onInteractBlockEventEventSecondary(InteractBlockEvent.Secondary event, @First Player player) {
+	public void onInteractBlockEventEventSecondary(InteractBlockEvent.Primary event, @First Player player) {
 		Optional<Location<World>> optionalLocation = event.getTargetBlock().getLocation();
 
 		if (!optionalLocation.isPresent()) {
@@ -60,9 +61,13 @@ public class SpeedModuleListener {
 			spawner.setTime(speed);
 			spawner.update();
 
-			player.getInventory().query(itemStack).poll(1);
+			if(!player.gameMode().get().equals(GameModes.CREATIVE)) {
+				player.getInventory().query(itemStack).poll(1);
+			}
 
 			player.sendMessage(Text.of(TextColors.GREEN, "Speed module inserted"));
+			
+			event.setCancelled(true);
 		}
 	}
 

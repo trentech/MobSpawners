@@ -5,13 +5,13 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.init.Items;
+import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 
 public class CMDEntity implements CommandExecutor {
 
@@ -22,12 +22,12 @@ public class CMDEntity implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		EntityType entity = args.<EntityType>getOne("entity").get();
-
-		ItemStack itemStack = Items.getEntityModule(entity);
+		ItemStack itemStack = Items.getEntityModule();
 
 		player.getInventory().offer(itemStack);
 
+		SpawnerListener.checkItemInHand(player);
+		
 		return CommandResult.success();
 	}
 }
