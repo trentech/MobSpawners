@@ -30,9 +30,7 @@ public class SpawnerDB {
 	
 	protected static void init() {
 		try {
-			String database = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "sql", "database").getString();
-
-			SQLManager sqlManager = SQLManager.get(Main.getPlugin(), database);
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
 			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("SPAWNERS"));
@@ -71,9 +69,7 @@ public class SpawnerDB {
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 			try {
-				String database = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "sql", "database").getString();
-
-				SQLManager sqlManager = SQLManager.get(Main.getPlugin(), database);
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 				Connection connection = sqlManager.getDataSource().getConnection();
 
 				PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("SPAWNERS") + " (Name, Spawner) VALUES (?, ?)");
@@ -106,9 +102,7 @@ public class SpawnerDB {
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 			try {
-				String database = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "sql", "database").getString();
-
-				SQLManager sqlManager = SQLManager.get(Main.getPlugin(), database);
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 				Connection connection = sqlManager.getDataSource().getConnection();
 
 				PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("SPAWNERS") + " SET Spawner = ? WHERE Name = ?");
@@ -149,9 +143,7 @@ public class SpawnerDB {
 			String name = location.getExtent().getName() + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
 
 			try {
-				String database = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "sql", "database").getString();
-
-				SQLManager sqlManager = SQLManager.get(Main.getPlugin(), database);
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 				Connection connection = sqlManager.getDataSource().getConnection();
 
 				PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("SPAWNERS") + " WHERE Name = ?");
