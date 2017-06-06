@@ -23,7 +23,7 @@ public class CommandManager {
 		    .executor(new CMDQuantity())
 		    .build();
 	
-	public CommandSpec cmdModule = CommandSpec.builder()
+	private CommandSpec cmdModule = CommandSpec.builder()
 		    .permission("mobspawners.cmd.spawner.module")
 		    .child(cmdEntity, "entity", "e")
 		    .child(cmdQuantity, "quantity", "q")

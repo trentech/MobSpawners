@@ -32,6 +32,7 @@ import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.gmail.trentech.mobspawners.commands.CommandManager;
 import com.gmail.trentech.mobspawners.data.LocationSerializable;
 import com.gmail.trentech.mobspawners.data.entity.EntityData;
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
@@ -90,6 +91,8 @@ public class Main {
 		Common.initConfig();
 		Common.initData();
 		// Common.initRecipes();
+		
+		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "s");
 	}
 
 	@Listener
