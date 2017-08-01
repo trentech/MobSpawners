@@ -4,21 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.item.ItemTypes;
 
 import com.gmail.trentech.mobspawners.Main;
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
-
 import com.gmail.trentech.pjc.core.ConfigManager;
-import com.gmail.trentech.pjc.core.RecipeManager;
 import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pjc.help.Argument;
 import com.gmail.trentech.pjc.help.Help;
 import com.gmail.trentech.pjc.help.Usage;
-import com.gmail.trentech.pjc.utils.InvalidItemTypeException;
 
-import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
 public class Common {
@@ -148,16 +142,16 @@ public class Common {
 	}
 	
 	public static void initRecipeManager() {
-		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig().getNode("recipes");
-
-		try {
-			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("spawner"), Items.getSpawner(new Spawner())));
-			
-			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("quantity-module"), Items.getQuantityModule(config.getNode("settings", "quantity-module-increment").getInt())));
-
-			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("speed-module"), Items.getSpeedModule(config.getNode("settings", "speed-module-increment").getInt())));
-		} catch (InvalidItemTypeException e) {
-			e.printStackTrace();
-		}
+//		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig().getNode("recipes");
+//
+//		try {
+//			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("spawner"), Items.getSpawner(new Spawner())));
+//			
+//			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("quantity-module"), Items.getQuantityModule(config.getNode("settings", "quantity-module-increment").getInt())));
+//
+//			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("speed-module"), Items.getSpeedModule(config.getNode("settings", "speed-module-increment").getInt())));
+//		} catch (InvalidItemTypeException e) {
+//			e.printStackTrace();
+//		}
 	}
 }

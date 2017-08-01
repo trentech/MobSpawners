@@ -209,7 +209,7 @@ public class Main {
 				continue;
 			}
 
-			if (optionalLocation.equals(location)) {
+			if (optionalLocation.get().equals(location)) {
 				continue;
 			}
 
