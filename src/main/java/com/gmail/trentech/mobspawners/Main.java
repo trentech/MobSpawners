@@ -74,6 +74,12 @@ public class Main {
 			e.printStackTrace();
 		}
 		
+		Common.initConfig();		
+		Common.initRecipes();
+	}
+
+	@Listener
+	public void onInitialization(GameInitializationEvent event) {
 		Sponge.getDataManager().registerBuilder(LocationSerializable.class, new LocationSerializable.Builder());
 
 		DataRegistration.builder().dataClass(EntityData.class).immutableClass(EntityData.Immutable.class)
@@ -84,15 +90,16 @@ public class Main {
 		DataRegistration.builder().dataClass(SpawnerData.class).immutableClass(SpawnerData.Immutable.class)
 			.builder(new SpawnerData.Builder()).dataName("Spawner").manipulatorId("mobspawners_spawner").buildAndRegister(Main.getPlugin());
 
-	}
-
-	@Listener
-	public void onInitialization(GameInitializationEvent event) {
-		Common.initConfig();
-		Common.initData();
-		// Common.initRecipes();
+		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
+		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
+		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
+		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
 		
+		Common.initData();
+
 		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "s");
+		
+		Common.initHelp();
 	}
 
 	@Listener

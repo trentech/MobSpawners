@@ -8,11 +8,13 @@ import org.spongepowered.api.item.ItemTypes;
 
 import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.pjc.core.ConfigManager;
+import com.gmail.trentech.pjc.core.RecipeManager;
 import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pjc.help.Argument;
 import com.gmail.trentech.pjc.help.Help;
 import com.gmail.trentech.pjc.help.Usage;
 
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
 public class Common {
@@ -70,7 +72,7 @@ public class Common {
 				.addChild(spawnerModuleEntity);
 		
 		Help spawner = new Help("spawner", "spawner", "Base command for MobSpawners")
-				.setPermission("mobspawners.cmd.spawner.module")
+				.setPermission("mobspawners.cmd.spawner")
 				.addChild(spawnerList)
 				.addChild(spawnerCreate)
 				.addChild(spawnerModule);
@@ -83,37 +85,32 @@ public class Common {
 		CommentedConfigurationNode config = configManager.getConfig();
 
 		if (config.getNode("recipes", "spawner").isVirtual()) {
-			config.getNode("recipes", "spawner", "1x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "1x2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "1x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "2x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "2x2").setValue(ItemTypes.REPEATER.getId());
-			config.getNode("recipes", "spawner", "2x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "3x1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "3x2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
-			config.getNode("recipes", "spawner", "3x3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15");
+			config.getNode("recipes", "spawner", "enable").setValue(true);
+			config.getNode("recipes", "spawner", "id").setValue("spawner");
+			config.getNode("recipes", "spawner", "row1").setValue(ItemTypes.STAINED_GLASS.getId() + ":15" + "," + ItemTypes.STAINED_GLASS.getId() + ":15" + "," + ItemTypes.STAINED_GLASS.getId() + ":15");
+			config.getNode("recipes", "spawner", "row2").setValue(ItemTypes.STAINED_GLASS.getId() + ":15" + "," + ItemTypes.REPEATER.getId() + "," + ItemTypes.STAINED_GLASS.getId() + ":15");
+			config.getNode("recipes", "spawner", "row3").setValue(ItemTypes.STAINED_GLASS.getId() + ":15" + "," + ItemTypes.STAINED_GLASS.getId() + ":15" + "," + ItemTypes.STAINED_GLASS.getId() + ":15");
 		}
 		if (config.getNode("recipes", "speed-module").isVirtual()) {
-			config.getNode("recipes", "speed-module", "1x1").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "speed-module", "1x2").setValue(ItemTypes.REPEATER.getId());
-			config.getNode("recipes", "speed-module", "1x3").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "speed-module", "2x1").setValue(ItemTypes.REDSTONE.getId());
-			config.getNode("recipes", "speed-module", "2x2").setValue(ItemTypes.DIAMOND.getId());
-			config.getNode("recipes", "speed-module", "2x3").setValue(ItemTypes.REDSTONE.getId());
-			config.getNode("recipes", "speed-module", "3x1").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "speed-module", "3x2").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "speed-module", "3x3").setValue(ItemTypes.GOLD_BLOCK.getId());
+			config.getNode("recipes", "speed-module", "enable").setValue(true);
+			config.getNode("recipes", "speed-module", "id").setValue("speed_module");
+			config.getNode("recipes", "speed-module", "row1").setValue(ItemTypes.GOLD_BLOCK.getId() + "," + ItemTypes.REPEATER.getId() + "," + ItemTypes.GOLD_BLOCK.getId());
+			config.getNode("recipes", "speed-module", "row2").setValue(ItemTypes.REDSTONE.getId() + "," + ItemTypes.DIAMOND.getId() + "," + ItemTypes.REDSTONE.getId());
+			config.getNode("recipes", "speed-module", "row3").setValue(ItemTypes.GOLD_BLOCK.getId() + "," + ItemTypes.GOLD_BLOCK.getId() + "," + ItemTypes.GOLD_BLOCK.getId());
 		}
 		if (config.getNode("recipes", "quantity-module").isVirtual()) {
-			config.getNode("recipes", "quantity-module", "1x1").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "quantity-module", "1x2").setValue(ItemTypes.COMPARATOR.getId());
-			config.getNode("recipes", "quantity-module", "1x3").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "quantity-module", "2x1").setValue(ItemTypes.REDSTONE.getId());
-			config.getNode("recipes", "quantity-module", "2x2").setValue(ItemTypes.DIAMOND.getId());
-			config.getNode("recipes", "quantity-module", "2x3").setValue(ItemTypes.REDSTONE.getId());
-			config.getNode("recipes", "quantity-module", "3x1").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "quantity-module", "3x2").setValue(ItemTypes.GOLD_BLOCK.getId());
-			config.getNode("recipes", "quantity-module", "3x3").setValue(ItemTypes.GOLD_BLOCK.getId());
+			config.getNode("recipes", "quantity-module", "enable").setValue(true);
+			config.getNode("recipes", "quantity-module", "id").setValue("quantity_module");
+			config.getNode("recipes", "quantity-module", "row1").setValue(ItemTypes.GOLD_BLOCK.getId() + "," + ItemTypes.COMPARATOR.getId() + "," + ItemTypes.GOLD_BLOCK.getId());
+			config.getNode("recipes", "quantity-module", "row2").setValue(ItemTypes.REDSTONE.getId() + "," + ItemTypes.DIAMOND.getId() + "," + ItemTypes.REDSTONE.getId());
+			config.getNode("recipes", "quantity-module", "row3").setValue(ItemTypes.GOLD_BLOCK.getId() + "," + ItemTypes.GOLD_BLOCK.getId() + "," + ItemTypes.GOLD_BLOCK.getId());
+		}
+		if (config.getNode("recipes", "entity-module").isVirtual()) {
+			config.getNode("recipes", "entity-module", "enable").setValue(true);
+			config.getNode("recipes", "entity-module", "id").setValue("entity_module");
+			config.getNode("recipes", "entity-module", "row1").setValue(ItemTypes.GOLD_INGOT.getId() + "," + ItemTypes.GOLD_INGOT.getId() + "," + ItemTypes.GOLD_INGOT.getId());
+			config.getNode("recipes", "entity-module", "row2").setValue(ItemTypes.REDSTONE.getId() + "," + ItemTypes.REPEATER.getId() + "," + ItemTypes.REDSTONE.getId());
+			config.getNode("recipes", "entity-module", "row3").setValue(ItemTypes.GOLD_INGOT.getId() + "," + ItemTypes.GOLD_INGOT.getId() + "," + ItemTypes.GOLD_INGOT.getId());
 		}
 
 		if (config.getNode("settings", "spawn-amount").isVirtual()) {
@@ -141,17 +138,21 @@ public class Common {
 		configManager.save();
 	}
 	
-	public static void initRecipeManager() {
-//		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig().getNode("recipes");
-//
-//		try {
-//			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("spawner"), Items.getSpawner(new Spawner())));
-//			
-//			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("quantity-module"), Items.getQuantityModule(config.getNode("settings", "quantity-module-increment").getInt())));
-//
-//			Sponge.getRegistry().getRecipeRegistry().register(RecipeManager.getShapedRecipe(config.getNode("speed-module"), Items.getSpeedModule(config.getNode("settings", "speed-module-increment").getInt())));
-//		} catch (InvalidItemTypeException e) {
-//			e.printStackTrace();
-//		}
+	public static void initRecipes() {
+		ConfigurationNode recipes = ConfigManager.get(Main.getPlugin()).getConfig().getNode("recipes");
+		ConfigurationNode settings = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings");
+		
+		if (recipes.getNode("quantity-module", "enable").getBoolean()) {
+			RecipeManager.register(recipes.getNode("quantity-module"), Items.getQuantityModule(settings.getNode("quantity-module-increment").getInt()));
+		}
+		if (recipes.getNode("speed-module", "enable").getBoolean()) {
+			RecipeManager.register(recipes.getNode("speed-module"), Items.getSpeedModule(settings.getNode("speed-module-increment").getInt()));
+		}
+		if (recipes.getNode("entity-module", "enable").getBoolean()) {
+			RecipeManager.register(recipes.getNode("entity-module"), Items.getEntityModule());
+		}
+		if (recipes.getNode("spawner", "enable").getBoolean()) {
+			RecipeManager.register(recipes.getNode("spawner"), Items.getSpawner());
+		}
 	}
 }

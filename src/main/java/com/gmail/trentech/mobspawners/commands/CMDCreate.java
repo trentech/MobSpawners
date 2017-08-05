@@ -11,6 +11,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.mobspawners.data.spawner.Spawner;
+import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
 import com.gmail.trentech.mobspawners.init.Items;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
 
@@ -24,7 +25,7 @@ public class CMDCreate implements CommandExecutor {
 		Player player = (Player) src;
 
 		ItemStack itemStack = Items.getSpawner(new Spawner());
-
+		itemStack.offer(new SpawnerData(new Spawner()));
 		player.getInventory().offer(itemStack);
 
 		SpawnerListener.checkItemInHand(player);

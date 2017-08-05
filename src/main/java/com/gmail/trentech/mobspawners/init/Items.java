@@ -3,11 +3,11 @@ package com.gmail.trentech.mobspawners.init;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
+import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.EntityArchetype;
+import org.spongepowered.api.item.Enchantments;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -26,7 +26,11 @@ public class Items {
 		lore.add(Text.of(TextColors.GREEN, "Quantity: ", TextColors.WHITE, quantity));
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Quantity Module"));
-		itemStack.offer(Sponge.getDataManager().getManipulatorBuilder(EnchantmentData.class).get().create());
+
+		List<ItemEnchantment> enchantments = new ArrayList<>();
+		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		
+		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
 		itemStack.offer(Keys.ITEM_LORE, lore);
 
@@ -41,7 +45,11 @@ public class Items {
 		lore.add(Text.of(TextColors.GREEN, "Speed: ", TextColors.WHITE, seconds));
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Speed Module"));
-		itemStack.offer(Sponge.getDataManager().getManipulatorBuilder(EnchantmentData.class).get().create());
+
+		List<ItemEnchantment> enchantments = new ArrayList<>();
+		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		
+		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
 		itemStack.offer(Keys.HIDE_ATTRIBUTES, true);
 		itemStack.offer(Keys.ITEM_LORE, lore);
@@ -53,15 +61,35 @@ public class Items {
 		ItemStack itemStack = ItemStack.of(ItemTypes.PAPER, 1);
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Entity Module"));
-		itemStack.offer(Sponge.getDataManager().getManipulatorBuilder(EnchantmentData.class).get().create());
+
+		List<ItemEnchantment> enchantments = new ArrayList<>();
+		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		
+		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
 		itemStack.offer(Keys.HIDE_ATTRIBUTES, true);
 
 		return itemStack;
 	}
 
-	public static ItemStack getSpawner(Spawner spawner) {
+	public static ItemStack getSpawner() {
 		ItemStack itemStack = ItemStack.of(ItemTypes.STAINED_GLASS, 1);
+
+		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
+		itemStack.offer(Keys.DYE_COLOR, DyeColors.BLACK);		
+
+		List<ItemEnchantment> enchantments = new ArrayList<>();
+		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		
+		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
+		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
+		itemStack.offer(Keys.HIDE_ATTRIBUTES, true);
+
+		return itemStack;
+	}
+	
+	public static ItemStack getSpawner(Spawner spawner) {
+		ItemStack itemStack = getSpawner();
 
 		List<Text> lore = new ArrayList<>();
 
@@ -76,13 +104,7 @@ public class Items {
 		lore.add(Text.of(TextColors.GREEN, "Time: ", TextColors.WHITE, spawner.getTime(), " seconds"));
 		lore.add(Text.of(TextColors.GREEN, "Quantity: ", TextColors.WHITE, spawner.getAmount()));
 
-		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
-		itemStack.offer(Keys.DYE_COLOR, DyeColors.BLACK);		
 		itemStack.offer(new SpawnerData(spawner));
-		itemStack.offer(Sponge.getDataManager().getManipulatorBuilder(EnchantmentData.class).get().create());
-		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
-		itemStack.offer(Keys.HIDE_ATTRIBUTES, true);
-		itemStack.offer(Keys.ITEM_LORE, lore);
 
 		return itemStack;
 	}

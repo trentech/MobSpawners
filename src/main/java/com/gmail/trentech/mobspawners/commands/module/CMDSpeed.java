@@ -10,8 +10,9 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.init.Items;
-import com.gmail.trentech.pjc.Main;
+
 import com.gmail.trentech.pjc.core.ConfigManager;
 
 public class CMDSpeed implements CommandExecutor {

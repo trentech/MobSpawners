@@ -297,13 +297,31 @@ public class SpawnerListener {
 		if (optionalItemStack.isPresent()) {
 			ItemStack itemStack = optionalItemStack.get();
 
-			Optional<SpawnerData> optionalData = itemStack.get(SpawnerData.class);
+			Optional<Text> optionalName = itemStack.get(Keys.DISPLAY_NAME);
+			
+			if(!optionalName.isPresent()) {
+				return;
+			}		
 
-			if (optionalData.isPresent()) {
-				cache.put(player.getUniqueId(), optionalData.get());
-
+			if(!optionalName.get().toPlain().equalsIgnoreCase("Spawner")) {
 				return;
 			}
+			Optional<SpawnerData> optionalData = itemStack.get(SpawnerData.class);
+
+			SpawnerData data;
+			if (!optionalData.isPresent()) {
+				data = new SpawnerData(new Spawner());
+				
+				itemStack.offer(data);
+				
+				player.setItemInHand(HandTypes.MAIN_HAND, itemStack);
+			} else {
+				data = optionalData.get();
+			}
+
+			cache.put(player.getUniqueId(), data);
+
+			return;		
 		}
 
 		cache.remove(player.getUniqueId());
