@@ -18,8 +18,6 @@ import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -167,7 +165,7 @@ public class Main {
 							
 							EntityArchetype snapshot = entities.get(random.nextInt(entities.size()));
 
-							snapshot.apply(location.get(), Cause.of(NamedCause.source(this)));
+							snapshot.apply(location.get());
 
 							for (int x = 0; x < 9; x++) {
 								location.get().getExtent().spawnParticles(spawnParticle, location.get().getPosition().add(random.nextDouble() - .5, random.nextDouble() - .5, random.nextDouble() - .5));
