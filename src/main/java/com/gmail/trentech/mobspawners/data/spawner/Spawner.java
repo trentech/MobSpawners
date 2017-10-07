@@ -8,10 +8,7 @@ import static com.gmail.trentech.mobspawners.data.DataQueries.OWNER;
 import static com.gmail.trentech.mobspawners.data.DataQueries.RANGE;
 import static com.gmail.trentech.mobspawners.data.DataQueries.TIME;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -19,10 +16,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.living.player.Player;
@@ -33,10 +32,8 @@ import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.data.DataQueries;
 import com.gmail.trentech.mobspawners.data.LocationSerializable;
 import com.gmail.trentech.pjc.core.ConfigManager;
-import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class Spawner implements DataSerializable {
 
@@ -237,27 +234,19 @@ public class Spawner implements DataSerializable {
 		return SpawnerDB.all();
 	}
 	
-	private static String serialize(EntityArchetype entity) {
+	public static String serialize(EntityArchetype entity) {
 		try {
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(EntityArchetype.class), entity);
-			loader.save(node);
-			return sink.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return DataFormats.JSON.write(entity.toContainer());
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}
 
-	private static EntityArchetype deserialize(String item) {
+	public static EntityArchetype deserialize(String entity) {
 		try {
-			StringReader source = new StringReader(item);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return node.getValue(TypeToken.of(EntityArchetype.class));
-		} catch (Exception e) {
+			return Sponge.getDataManager().deserialize(EntityArchetype.class, DataFormats.JSON.read(entity)).get();
+		} catch (InvalidDataException | IOException e) {
 			e.printStackTrace();
 			return null;
 		}
