@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.spongepowered.api.item.ItemTypes;
 
 import com.gmail.trentech.mobspawners.Main;
+import com.gmail.trentech.mobspawners.utils.Resource;
 import com.gmail.trentech.pjc.core.ConfigManager;
 import com.gmail.trentech.pjc.core.RecipeManager;
 import com.gmail.trentech.pjc.core.SQLManager;
@@ -143,16 +144,16 @@ public class Common {
 		ConfigurationNode settings = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings");
 		
 		if (recipes.getNode("quantity-module", "enable").getBoolean()) {
-			RecipeManager.register(recipes.getNode("quantity-module"), Items.getQuantityModule(settings.getNode("quantity-module-increment").getInt()));
+			RecipeManager.register(Resource.ID, recipes.getNode("quantity-module"), Items.getQuantityModule(settings.getNode("quantity-module-increment").getInt()));
 		}
 		if (recipes.getNode("speed-module", "enable").getBoolean()) {
-			RecipeManager.register(recipes.getNode("speed-module"), Items.getSpeedModule(settings.getNode("speed-module-increment").getInt()));
+			RecipeManager.register(Resource.ID, recipes.getNode("speed-module"), Items.getSpeedModule(settings.getNode("speed-module-increment").getInt()));
 		}
 		if (recipes.getNode("entity-module", "enable").getBoolean()) {
-			RecipeManager.register(recipes.getNode("entity-module"), Items.getEntityModule());
+			RecipeManager.register(Resource.ID, recipes.getNode("entity-module"), Items.getEntityModule());
 		}
 		if (recipes.getNode("spawner", "enable").getBoolean()) {
-			RecipeManager.register(recipes.getNode("spawner"), Items.getSpawner());
+			RecipeManager.register(Resource.ID, recipes.getNode("spawner"), Items.getSpawner());
 		}
 	}
 }
