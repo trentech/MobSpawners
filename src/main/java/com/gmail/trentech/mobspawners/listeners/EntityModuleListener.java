@@ -14,6 +14,7 @@ import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.blockray.BlockRay;
@@ -65,7 +66,7 @@ public class EntityModuleListener {
 
 		copy.offer(new EntityData(entity.createArchetype()));
 
-		player.getInventory().query(itemStack).set(copy);
+		player.getInventory().query(QueryOperationTypes.ITEM_STACK_EXACT.of(itemStack)).set(copy);
 		
 		entity.remove();
 	}
@@ -110,7 +111,7 @@ public class EntityModuleListener {
 			copy.remove(Keys.ITEM_LORE);
 			copy.remove(EntityData.class);
 
-			player.getInventory().query(itemStack).set(copy);
+			player.getInventory().query(QueryOperationTypes.ITEM_STACK_EXACT.of(itemStack)).set(copy);
 		}
 	}
 	
@@ -164,7 +165,7 @@ public class EntityModuleListener {
 		copy.remove(Keys.ITEM_LORE);
 		copy.remove(EntityData.class);
 
-		player.getInventory().query(itemStack).set(copy);
+		player.getInventory().query(QueryOperationTypes.ITEM_STACK_EXACT.of(itemStack)).set(copy);
 
 		player.sendMessage(Text.of(TextColors.GREEN, "Entity module inserted"));
 	}

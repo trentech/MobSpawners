@@ -11,6 +11,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
@@ -62,7 +63,7 @@ public class SpeedModuleListener {
 			spawner.update();
 
 			if(!player.gameMode().get().equals(GameModes.CREATIVE)) {
-				player.getInventory().query(itemStack).poll(1);
+				player.getInventory().query(QueryOperationTypes.ITEM_STACK_EXACT.of(itemStack)).poll(1);
 			}
 
 			player.sendMessage(Text.of(TextColors.GREEN, "Speed module inserted"));

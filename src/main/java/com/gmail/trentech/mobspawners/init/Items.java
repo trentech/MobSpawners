@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.EntityArchetype;
-import org.spongepowered.api.item.Enchantments;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.enchantment.Enchantment;
+import org.spongepowered.api.item.enchantment.EnchantmentTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -27,8 +27,8 @@ public class Items {
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Quantity Module"));
 
-		List<ItemEnchantment> enchantments = new ArrayList<>();
-		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		List<Enchantment> enchantments = new ArrayList<>();
+		enchantments.add(Enchantment.builder().type(EnchantmentTypes.FEATHER_FALLING).level(1).build());
 		
 		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
@@ -46,8 +46,8 @@ public class Items {
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Speed Module"));
 
-		List<ItemEnchantment> enchantments = new ArrayList<>();
-		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		List<Enchantment> enchantments = new ArrayList<>();
+		enchantments.add(Enchantment.builder().type(EnchantmentTypes.FEATHER_FALLING).level(1).build());
 		
 		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
@@ -62,8 +62,8 @@ public class Items {
 
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Entity Module"));
 
-		List<ItemEnchantment> enchantments = new ArrayList<>();
-		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		List<Enchantment> enchantments = new ArrayList<>();
+		enchantments.add(Enchantment.builder().type(EnchantmentTypes.FEATHER_FALLING).level(1).build());
 		
 		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
@@ -78,8 +78,8 @@ public class Items {
 		itemStack.offer(Keys.DISPLAY_NAME, Text.of("Spawner"));
 		itemStack.offer(Keys.DYE_COLOR, DyeColors.BLACK);		
 
-		List<ItemEnchantment> enchantments = new ArrayList<>();
-		enchantments.add(new ItemEnchantment(Enchantments.FEATHER_FALLING, 1));
+		List<Enchantment> enchantments = new ArrayList<>();
+		enchantments.add(Enchantment.builder().type(EnchantmentTypes.FEATHER_FALLING).level(1).build());
 		
 		itemStack.offer(Keys.ITEM_ENCHANTMENTS, enchantments);
 		itemStack.offer(Keys.HIDE_ENCHANTMENTS, true);
