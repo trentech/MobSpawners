@@ -3,11 +3,6 @@ package com.gmail.trentech.mobspawners.data;
 import static com.gmail.trentech.mobspawners.data.DataQueries.VECTOR3D;
 import static com.gmail.trentech.mobspawners.data.DataQueries.WORLD;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
@@ -21,9 +16,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class LocationSerializable implements DataSerializable {
 
@@ -54,32 +46,6 @@ public class LocationSerializable implements DataSerializable {
 		return DataContainer.createNew().set(VECTOR3D, DataTranslators.VECTOR_3_D.translate(vector3d)).set(WORLD, world.getName());
 	}
 
-	public static String serialize(Location<World> location) {
-		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(new LocationSerializable(location).toContainer());
-
-		StringWriter stringWriter = new StringWriter();
-		try {
-			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return stringWriter.toString();
-	}
-	
-	public static Location<World> deserialize(String item) {
-		ConfigurationNode node = null;
-		try {
-			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
-
-		return Sponge.getDataManager().deserialize(LocationSerializable.class, dataView).get().getLocation();
-	}
-	
 	public static class Builder extends AbstractDataBuilder<LocationSerializable> {
 
 		public Builder() {

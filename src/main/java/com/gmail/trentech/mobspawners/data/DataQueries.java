@@ -10,6 +10,7 @@ public class DataQueries {
 	public static final DataQuery DATA = of("data");
 	public static final DataQuery WORLD = of("world");
 	public static final DataQuery VECTOR3D = of("vector3d");
+	public static final DataQuery ENTITY = of("entity");
 	public static final DataQuery ENTITIES = of("entities");
 	public static final DataQuery LOCATION = of("location");
 	public static final DataQuery AMOUNT = of("amount");

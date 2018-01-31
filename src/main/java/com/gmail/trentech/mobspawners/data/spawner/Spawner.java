@@ -3,6 +3,7 @@ package com.gmail.trentech.mobspawners.data.spawner;
 import static com.gmail.trentech.mobspawners.data.DataQueries.AMOUNT;
 import static com.gmail.trentech.mobspawners.data.DataQueries.ENABLE;
 import static com.gmail.trentech.mobspawners.data.DataQueries.ENTITIES;
+import static com.gmail.trentech.mobspawners.data.DataQueries.ENTITY;
 import static com.gmail.trentech.mobspawners.data.DataQueries.LOCATION;
 import static com.gmail.trentech.mobspawners.data.DataQueries.OWNER;
 import static com.gmail.trentech.mobspawners.data.DataQueries.RANGE;
@@ -10,6 +11,7 @@ import static com.gmail.trentech.mobspawners.data.DataQueries.TIME;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -150,17 +152,17 @@ public class Spawner implements DataSerializable {
 		DataContainer container = DataContainer.createNew().set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());
 
 		if (!entities.isEmpty()) {
-			List<String> list = new ArrayList<>();
-			
-			for(EntityArchetype entity : entities) {
-				list.add(serialize(entity));
+			List<DataView> list = new LinkedList<>();
+
+			for (EntityArchetype entity : entities) {
+				list.add(DataContainer.createNew().set(ENTITY, entity.toContainer()));
 			}
-			
+
 			container.set(DataQueries.ENTITIES, list);
 		}
 
 		if (location.isPresent()) {
-			container.set(DataQueries.LOCATION, LocationSerializable.serialize(location.get()));
+			container.set(DataQueries.LOCATION, new LocationSerializable(location.get()));
 		}
 
 		return container;
@@ -178,10 +180,9 @@ public class Spawner implements DataSerializable {
 				List<EntityArchetype> entities = new ArrayList<>();
 
 				if (container.contains(ENTITIES)) {
-					for(String entry : container.getStringList(ENTITIES).get()) {
-						entities.add(deserialize(entry));
+					for (DataView data : container.getViewList(ENTITIES).get()) {
+						entities.add(Sponge.getDataManager().deserialize(EntityArchetype.class, data.getView(ENTITY).get()).get());
 					}
-					//entities = container.getSerializableList(ENTITIES, EntityArchetype.class).get();
 				}
 
 				int amount = container.getInt(AMOUNT).get();
@@ -192,7 +193,7 @@ public class Spawner implements DataSerializable {
 				UUID owner = UUID.fromString(container.getString(OWNER).get());
 
 				if (container.contains(LOCATION)) {
-					Location<World> location = LocationSerializable.deserialize(container.getString(LOCATION).get());
+					Location<World> location = container.getSerializable(LOCATION, LocationSerializable.class).get().getLocation();
 
 					return Optional.of(new Spawner(entities, location, amount, time, range, enable, owner));
 				} else {
