@@ -11,13 +11,13 @@ import com.google.common.reflect.TypeToken;
 public class DataKeys {
 
 	private static TypeToken<Value<Spawner>> spawnerToken = new TypeToken<Value<Spawner>>() {
-				private static final long serialVersionUID = -6048452336902928437L;
+				private static final long serialVersionUID = -1;
 	};
 	
 	private static TypeToken<Value<EntityArchetype>> entityToken = new TypeToken<Value<EntityArchetype>>() {
-		private static final long serialVersionUID = -1973282741282076889L;
+		private static final long serialVersionUID = -1;
 	};
 	
-	public static Key<Value<Spawner>> SPAWNER_DATA = Key.builder().type(spawnerToken).id("mobspawners:spawnerdata").name("SpawnerData").query(DataQuery.of('.', "spawnerdata")).build();
-	public static Key<Value<EntityArchetype>> ENTITY_ARCHE = Key.builder().type(entityToken).id("mobspawners:entityarchetype").name("Entity").query(DataQuery.of('.', "entityarchetype")).build();
+	public static Key<Value<Spawner>> SPAWNER_DATA = Key.builder().type(spawnerToken).id("spawner_data").name("spawner_data").query(DataQuery.of("spawner_data")).build();
+	public static Key<Value<EntityArchetype>> ENTITY_DATA = Key.builder().type(entityToken).id("entity_data").name("entity_data").query(DataQuery.of("entity_data")).build();
 }

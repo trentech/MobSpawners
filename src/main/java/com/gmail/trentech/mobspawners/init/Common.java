@@ -31,7 +31,7 @@ public class Common {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("SPAWNERS") + " (Name TEXT, Spawner TEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("SPAWNERS") + " (Name TEXT, Spawner MEDIUMBLOB)");
 			statement.executeUpdate();
 
 			connection.close();

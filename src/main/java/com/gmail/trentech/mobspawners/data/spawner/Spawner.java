@@ -9,7 +9,6 @@ import static com.gmail.trentech.mobspawners.data.DataQueries.OWNER;
 import static com.gmail.trentech.mobspawners.data.DataQueries.RANGE;
 import static com.gmail.trentech.mobspawners.data.DataQueries.TIME;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,12 +17,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
-import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.living.player.Player;
@@ -181,7 +178,7 @@ public class Spawner implements DataSerializable {
 
 				if (container.contains(ENTITIES)) {
 					for (DataView data : container.getViewList(ENTITIES).get()) {
-						entities.add(Sponge.getDataManager().deserialize(EntityArchetype.class, data.getView(ENTITY).get()).get());
+						entities.add(EntityArchetype.builder().build(data.getView(ENTITY).get()).get());
 					}
 				}
 
@@ -233,23 +230,5 @@ public class Spawner implements DataSerializable {
 	
 	public static ConcurrentHashMap<Location<World>, Spawner> all() {
 		return SpawnerDB.all();
-	}
-	
-	public static String serialize(EntityArchetype entity) {
-		try {
-			return DataFormats.JSON.write(entity.toContainer());
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return null;
-		}
-	}
-
-	public static EntityArchetype deserialize(String entity) {
-		try {
-			return Sponge.getDataManager().deserialize(EntityArchetype.class, DataFormats.JSON.read(entity)).get();
-		} catch (InvalidDataException | IOException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 }

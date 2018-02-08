@@ -43,7 +43,7 @@ public class LocationSerializable implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		return DataContainer.createNew().set(VECTOR3D, DataTranslators.VECTOR_3_D.translate(vector3d)).set(WORLD, world.getName());
+		return DataContainer.createNew().set(VECTOR3D, DataTranslators.VECTOR_3_D.translate(vector3d)).set(WORLD, DataTranslators.UUID.translate(world.getUniqueId()));
 	}
 
 	public static class Builder extends AbstractDataBuilder<LocationSerializable> {
@@ -55,7 +55,7 @@ public class LocationSerializable implements DataSerializable {
 		@Override
 		protected Optional<LocationSerializable> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(WORLD, VECTOR3D)) {
-				Optional<World> optionalWorld = Sponge.getServer().getWorld(container.getString(WORLD).get());
+				Optional<World> optionalWorld = Sponge.getServer().getWorld(DataTranslators.UUID.translate(container.getView(WORLD).get()));
 
 				if (!optionalWorld.isPresent()) {
 					return Optional.empty();
