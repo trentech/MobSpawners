@@ -1,13 +1,6 @@
-package com.gmail.trentech.mobspawners.data.spawner;
+package com.gmail.trentech.mobspawners.data.serializable;
 
-import static com.gmail.trentech.mobspawners.data.DataQueries.AMOUNT;
-import static com.gmail.trentech.mobspawners.data.DataQueries.ENABLE;
-import static com.gmail.trentech.mobspawners.data.DataQueries.ENTITIES;
-import static com.gmail.trentech.mobspawners.data.DataQueries.ENTITY;
-import static com.gmail.trentech.mobspawners.data.DataQueries.LOCATION;
-import static com.gmail.trentech.mobspawners.data.DataQueries.OWNER;
-import static com.gmail.trentech.mobspawners.data.DataQueries.RANGE;
-import static com.gmail.trentech.mobspawners.data.DataQueries.TIME;
+import static org.spongepowered.api.data.DataQuery.of;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
@@ -28,14 +22,21 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.Main;
-import com.gmail.trentech.mobspawners.data.DataQueries;
-import com.gmail.trentech.mobspawners.data.LocationSerializable;
 import com.gmail.trentech.pjc.core.ConfigManager;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
 public class Spawner implements DataSerializable {
 
+	protected static final DataQuery ENTITY = of("entity");
+	protected static final DataQuery ENTITIES = of("entities");
+	protected static final DataQuery LOCATION = of("location");
+	protected static final DataQuery AMOUNT = of("amount");
+	protected static final DataQuery TIME = of("time");
+	protected static final DataQuery RANGE = of("range");
+	protected static final DataQuery ENABLE = of("enable");
+	protected static final DataQuery OWNER = of("owner");
+	
 	protected Optional<Location<World>> location = Optional.empty();
 	protected List<EntityArchetype> entities = new ArrayList<>();
 	protected int amount;
@@ -83,8 +84,18 @@ public class Spawner implements DataSerializable {
 		return entities;
 	}
 
-	public void addEntity(EntityArchetype snapshot) {
-		entities.add(snapshot);
+	public void addEntity(EntityArchetype entity) {
+		if(!entities.contains(entity)) {
+			entities.add(entity);
+		}	
+	}
+	
+	public void removeEntity(EntityArchetype entity) {
+		entities.remove(entity);
+	}
+	
+	public void setEntities(List<EntityArchetype> entities) {
+		this.entities = entities;
 	}
 
 	public int getAmount() {
@@ -146,7 +157,7 @@ public class Spawner implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		DataContainer container = DataContainer.createNew().set(DataQueries.AMOUNT, amount).set(DataQueries.TIME, time).set(DataQueries.RANGE, radius).set(DataQueries.ENABLE, enable).set(DataQueries.OWNER, owner.toString());
+		DataContainer container = DataContainer.createNew().set(AMOUNT, amount).set(TIME, time).set(RANGE, radius).set(ENABLE, enable).set(OWNER, owner.toString());
 
 		if (!entities.isEmpty()) {
 			List<DataView> list = new LinkedList<>();
@@ -155,11 +166,11 @@ public class Spawner implements DataSerializable {
 				list.add(DataContainer.createNew().set(ENTITY, entity.toContainer()));
 			}
 
-			container.set(DataQueries.ENTITIES, list);
+			container.set(ENTITIES, list);
 		}
 
 		if (location.isPresent()) {
-			container.set(DataQueries.LOCATION, new LocationSerializable(location.get()));
+			container.set(LOCATION, new LocationSerializable(location.get()));
 		}
 
 		return container;

@@ -1,12 +1,12 @@
-package com.gmail.trentech.mobspawners.data;
+package com.gmail.trentech.mobspawners.data.serializable;
 
-import static com.gmail.trentech.mobspawners.data.DataQueries.VECTOR3D;
-import static com.gmail.trentech.mobspawners.data.DataQueries.WORLD;
+import static org.spongepowered.api.data.DataQuery.of;
 
 import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
@@ -19,6 +19,9 @@ import com.flowpowered.math.vector.Vector3d;
 
 public class LocationSerializable implements DataSerializable {
 
+	private static final DataQuery WORLD = of("world");
+	private static final DataQuery VECTOR3D = of("vector3d");
+	
 	private World world;
 	private Vector3d vector3d;
 	

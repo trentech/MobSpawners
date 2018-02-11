@@ -7,13 +7,13 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
+import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult.Type;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.mobspawners.Main;
 import com.gmail.trentech.mobspawners.init.Items;
-
-import com.gmail.trentech.pjc.core.ConfigManager;
 
 public class CMDSpeed implements CommandExecutor {
 
@@ -24,9 +24,15 @@ public class CMDSpeed implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		ItemStack itemStack = Items.getSpeedModule(ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "speed-module-increment").getInt());
+		ItemStack itemStack = Items.getSpeedModule();
 
-		player.getInventory().offer(itemStack);
+		PlayerInventory inv = player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
+		
+		if(!inv.getHotbar().offer(itemStack).getType().equals(Type.SUCCESS)) {
+			if(!inv.getMainGrid().offer(itemStack).getType().equals(Type.SUCCESS)) {
+				src.sendMessage(Text.of(TextColors.RED, "Your inventory does not have enough space"));
+			}
+		}
 
 		return CommandResult.success();
 	}

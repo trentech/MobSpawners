@@ -1,75 +1,41 @@
 package com.gmail.trentech.mobspawners.listeners;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.item.inventory.CraftItemEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.crafting.CraftingOutput;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
+import com.gmail.trentech.mobspawners.data.manipulator.SpeedModuleData;
 
 public class SpeedModuleListener {
 
 	@Listener
-	public void onInteractBlockEventEventSecondary(InteractBlockEvent.Primary event, @First Player player) {
-		Optional<Location<World>> optionalLocation = event.getTargetBlock().getLocation();
+	public void onCraftItemEvent(CraftItemEvent.Preview event) {
+		Optional<ItemStack> peek = event.getCraftingInventory().getResult().peek();
 
-		if (!optionalLocation.isPresent()) {
-			return;
-		}
-		Location<World> location = optionalLocation.get();
+		if(peek.isPresent()) {
+			ItemStack itemStack = peek.get();
+			
+			Optional<Text> optionalDisplayName = itemStack.get(Keys.DISPLAY_NAME);
 
-		Optional<Spawner> optionalSpawner = Spawner.get(location);
-
-		if (!optionalSpawner.isPresent()) {
-			return;
-		}
-		Spawner spawner = optionalSpawner.get();
-
-		Optional<ItemStack> optionalItemStack = player.getItemInHand(HandTypes.MAIN_HAND);
-
-		if (!optionalItemStack.isPresent()) {
-			return;
-		}
-		ItemStack itemStack = optionalItemStack.get();
-
-		Optional<Text> optionalDisplayName = itemStack.get(Keys.DISPLAY_NAME);
-
-		if (!optionalDisplayName.isPresent()) {
-			return;
-		}
-
-		if (!optionalDisplayName.get().toPlain().equalsIgnoreCase("Speed Module")) {
-			return;
-		}
-
-		List<Text> lore = itemStack.get(Keys.ITEM_LORE).get();
-
-		int speed = spawner.getTime() - Integer.parseInt(lore.get(0).toPlain().replace("Speed: ", ""));
-
-		if(speed >= 5) {
-			spawner.setTime(speed);
-			spawner.update();
-
-			if(!player.gameMode().get().equals(GameModes.CREATIVE)) {
-				player.getInventory().query(QueryOperationTypes.ITEM_STACK_EXACT.of(itemStack)).poll(1);
+			if (!optionalDisplayName.isPresent()) {
+				return;
 			}
 
-			player.sendMessage(Text.of(TextColors.GREEN, "Speed module inserted"));
+			if (!optionalDisplayName.get().toPlain().equalsIgnoreCase("Speed Module")) {
+				return;
+			}
+
+			itemStack.offer(new SpeedModuleData());
 			
-			event.setCancelled(true);
+			CraftingOutput output = event.getCraftingInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(CraftingOutput.class));
+
+			System.out.println(output.set(itemStack).getType().name());
 		}
 	}
-
 }

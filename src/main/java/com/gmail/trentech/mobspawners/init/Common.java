@@ -141,13 +141,12 @@ public class Common {
 	
 	public static void initRecipes() {
 		ConfigurationNode recipes = ConfigManager.get(Main.getPlugin()).getConfig().getNode("recipes");
-		ConfigurationNode settings = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings");
-		
+
 		if (recipes.getNode("quantity-module", "enable").getBoolean()) {
-			RecipeManager.register(Resource.ID, recipes.getNode("quantity-module"), Items.getQuantityModule(settings.getNode("quantity-module-increment").getInt()));
+			RecipeManager.register(Resource.ID, recipes.getNode("quantity-module"), Items.getQuantityModule());
 		}
 		if (recipes.getNode("speed-module", "enable").getBoolean()) {
-			RecipeManager.register(Resource.ID, recipes.getNode("speed-module"), Items.getSpeedModule(settings.getNode("speed-module-increment").getInt()));
+			RecipeManager.register(Resource.ID, recipes.getNode("speed-module"), Items.getSpeedModule());
 		}
 		if (recipes.getNode("entity-module", "enable").getBoolean()) {
 			RecipeManager.register(Resource.ID, recipes.getNode("entity-module"), Items.getEntityModule());

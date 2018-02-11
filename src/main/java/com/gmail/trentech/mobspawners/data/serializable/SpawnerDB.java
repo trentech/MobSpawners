@@ -1,4 +1,4 @@
-package com.gmail.trentech.mobspawners.data.spawner;
+package com.gmail.trentech.mobspawners.data.serializable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

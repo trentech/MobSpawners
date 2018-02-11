@@ -1,4 +1,4 @@
-package com.gmail.trentech.mobspawners.data.spawner;
+package com.gmail.trentech.mobspawners.data.manipulator;
 
 import static com.gmail.trentech.mobspawners.data.DataKeys.SPAWNER_DATA;
 
@@ -17,11 +17,12 @@ import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.data.value.mutable.Value;
 
-import com.gmail.trentech.mobspawners.data.spawner.SpawnerData.Immutable;
+import com.gmail.trentech.mobspawners.data.manipulator.SpawnerData.Immutable;
+import com.gmail.trentech.mobspawners.data.serializable.Spawner;
 
 public class SpawnerData extends AbstractSingleData<Spawner, SpawnerData, Immutable> {
 
-	protected SpawnerData() {
+	public SpawnerData() {
 		super(new Spawner(), SPAWNER_DATA);
 	}
 
@@ -81,7 +82,7 @@ public class SpawnerData extends AbstractSingleData<Spawner, SpawnerData, Immuta
 
 	public static class Immutable extends AbstractImmutableSingleData<Spawner, Immutable, SpawnerData> {
 
-		protected Immutable(Spawner value) {
+		public Immutable(Spawner value) {
 			super(value, SPAWNER_DATA);
 		}
 

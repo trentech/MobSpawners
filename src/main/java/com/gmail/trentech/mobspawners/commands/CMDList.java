@@ -17,7 +17,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
+import com.gmail.trentech.mobspawners.data.serializable.Spawner;
 
 public class CMDList implements CommandExecutor {
 

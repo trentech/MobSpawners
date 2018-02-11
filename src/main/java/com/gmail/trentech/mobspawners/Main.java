@@ -20,6 +20,7 @@ import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Dependency;
@@ -32,11 +33,13 @@ import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.commands.CommandManager;
 import com.gmail.trentech.mobspawners.data.DataKeys;
-import com.gmail.trentech.mobspawners.data.LocationSerializable;
-import com.gmail.trentech.mobspawners.data.entity.EntityData;
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
-import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
+import com.gmail.trentech.mobspawners.data.manipulator.EntityModuleData;
+import com.gmail.trentech.mobspawners.data.manipulator.SpawnerData;
+import com.gmail.trentech.mobspawners.data.serializable.EntityModule;
+import com.gmail.trentech.mobspawners.data.serializable.LocationSerializable;
+import com.gmail.trentech.mobspawners.data.serializable.Spawner;
 import com.gmail.trentech.mobspawners.init.Common;
+import com.gmail.trentech.mobspawners.init.Items;
 import com.gmail.trentech.mobspawners.listeners.EntityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.QuantityModuleListener;
 import com.gmail.trentech.mobspawners.listeners.SpawnerListener;
@@ -73,34 +76,44 @@ public class Main {
 		@SuppressWarnings("unused")
 		Object obj = DataKeys.SPAWNER_DATA;
 		
-		Common.initConfig();		
+		Common.initData();	
+		Common.initConfig();
+		Items.init();
 		Common.initRecipes();
 	}
 
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
 		Sponge.getDataManager().registerBuilder(LocationSerializable.class, new LocationSerializable.Builder());
-
-		DataRegistration.builder().dataClass(EntityData.class).immutableClass(EntityData.Immutable.class)
-			.builder(new EntityData.Builder()).dataName("entity_data").manipulatorId("entity_data").buildAndRegister(Main.getPlugin());
-		
 		Sponge.getDataManager().registerBuilder(Spawner.class, new Spawner.Builder());
+		Sponge.getDataManager().registerBuilder(EntityModule.class, new EntityModule.Builder());
+	//	Sponge.getDataManager().registerBuilder(SpeedModule.class, new SpeedModule.Builder());
+	//	Sponge.getDataManager().registerBuilder(QuantityModule.class, new QuantityModule.Builder());
 		
+	//	DataRegistration.builder().dataClass(SpeedModuleData.class).immutableClass(SpeedModuleData.Immutable.class)
+	//		.builder(new SpeedModuleData.Builder()).dataName("speedmoduledata").manipulatorId("speed_module_data").buildAndRegister(Main.getPlugin());
+	//	DataRegistration.builder().dataClass(QuantityModuleData.class).immutableClass(QuantityModuleData.Immutable.class)
+	//		.builder(new QuantityModuleData.Builder()).dataName("quantitymoduledata").manipulatorId("quantity_module_data").buildAndRegister(Main.getPlugin());
+		DataRegistration.builder().dataClass(EntityModuleData.class).immutableClass(EntityModuleData.Immutable.class)
+			.builder(new EntityModuleData.Builder()).dataName("entitymoduledata").manipulatorId("entity_module_data").buildAndRegister(Main.getPlugin());
 		DataRegistration.builder().dataClass(SpawnerData.class).immutableClass(SpawnerData.Immutable.class)
-			.builder(new SpawnerData.Builder()).dataName("spawner_data").manipulatorId("spawner_data").buildAndRegister(Main.getPlugin());
-
+			.builder(new SpawnerData.Builder()).dataName("spawnerdata").manipulatorId("spawner_data").buildAndRegister(Main.getPlugin());
+		
 		Sponge.getEventManager().registerListeners(this, new SpawnerListener());
 		Sponge.getEventManager().registerListeners(this, new EntityModuleListener());
-		Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
-		Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());
-		
-		Common.initData();
+		//Sponge.getEventManager().registerListeners(this, new SpeedModuleListener());
+		//Sponge.getEventManager().registerListeners(this, new QuantityModuleListener());	
 
 		Sponge.getCommandManager().register(this, new CommandManager().cmdSpawner, "spawner", "s");
-		
+
 		Common.initHelp();
 	}
 
+	@Listener
+	public void onPostInitialization(GamePostInitializationEvent event) {
+		
+	}
+	
 	@Listener
 	public void onStartedServer(GameStartedServerEvent event) {
 		Spawner.init();
@@ -117,7 +130,7 @@ public class Main {
 		
 		Common.initConfig();
 		
-		// Common.initRecipes();
+		Common.initRecipes();
 	}
 	
 	public Logger getLog() {

@@ -26,8 +26,15 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.AffectSlotEvent;
+import org.spongepowered.api.event.item.inventory.CraftItemEvent;
+import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.crafting.CraftingOutput;
+import org.spongepowered.api.item.inventory.property.InventoryTitle;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
@@ -36,19 +43,20 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.mobspawners.Main;
-import com.gmail.trentech.mobspawners.data.spawner.Spawner;
-import com.gmail.trentech.mobspawners.data.spawner.SpawnerData;
+import com.gmail.trentech.mobspawners.data.manipulator.SpawnerData;
+import com.gmail.trentech.mobspawners.data.serializable.Spawner;
 import com.gmail.trentech.mobspawners.init.Items;
 import com.gmail.trentech.pjc.core.ConfigManager;
 
 public class SpawnerListener {
 
 	private static ConcurrentHashMap<UUID, SpawnerData> cache = new ConcurrentHashMap<>();
-
+	
 	@Listener
 	public void onClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
 		if (ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "disable-on-logout").getBoolean()) {
@@ -86,6 +94,31 @@ public class SpawnerListener {
 		}).submit(Main.getPlugin());
 	}
 
+	@Listener
+	public void onCraftItemEvent(CraftItemEvent.Craft event) {
+		Optional<ItemStack> peek = event.getCraftingInventory().getResult().peek();
+
+		if(peek.isPresent()) {
+			ItemStack itemStack = peek.get();
+			
+			Optional<Text> optionalDisplayName = itemStack.get(Keys.DISPLAY_NAME);
+
+			if (!optionalDisplayName.isPresent()) {
+				return;
+			}
+
+			if (!optionalDisplayName.get().toPlain().equalsIgnoreCase("Spawner")) {
+				return;
+			}
+
+			itemStack.offer(new SpawnerData());
+			
+			CraftingOutput output = event.getCraftingInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(CraftingOutput.class));
+
+			System.out.println(output.set(itemStack).getType().name());
+		}
+	}
+	
 	@Listener
 	public void onChangeBlockEventPlace(ChangeBlockEvent.Place event, @Root Player player) {
 		for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
@@ -144,90 +177,130 @@ public class SpawnerListener {
 					return;
 				}
 			}
+			
+			int quantityStart = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "spawn-amount").getInt();
+			
+			if(spawner.getAmount() > quantityStart) {
+				int quantityIncrement = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "quantity-module-increment").getInt();			
+				
+				ItemStack quantityModule = Items.getQuantityModule();
+				quantityModule.setQuantity((spawner.getAmount() - quantityStart) / quantityIncrement);
+				
+				Item item = (Item) location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
+				item.offer(Keys.REPRESENTED_ITEM, quantityModule.createSnapshot());
+				
+				location.getExtent().spawnEntity(item);
+			}
 
+			int speedStart = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "time").getInt();
+
+			if(spawner.getTime() < speedStart) {
+				int speedIncrement = ConfigManager.get(Main.getPlugin()).getConfig().getNode("settings", "speed-module-increment").getInt();
+
+				ItemStack speedModule = Items.getSpeedModule();
+				speedModule.setQuantity((speedStart - spawner.getTime()) / speedIncrement);
+				
+				Item item = (Item) location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
+				item.offer(Keys.REPRESENTED_ITEM, speedModule.createSnapshot());
+				
+				location.getExtent().spawnEntity(item);
+			}
+			
+			for(EntityArchetype entity : spawner.getEntities()) {
+				ItemStack entityModule = Items.getEntityModule(entity);
+				
+				Item item = (Item) location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
+				item.offer(Keys.REPRESENTED_ITEM, entityModule.createSnapshot());
+				
+				location.getExtent().spawnEntity(item);
+			}
+				
 			ItemStack itemStack = Items.getSpawner(spawner);
 
 			Item item = (Item) location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 			item.offer(Keys.REPRESENTED_ITEM, itemStack.createSnapshot());
-
+			
 			location.getExtent().spawnEntity(item);
 		}
 	}
 
 	@Listener
-	public void onNotifyNeighborBlockEvent(NotifyNeighborBlockEvent event, @First BlockSnapshot snapshot) {
-		if (snapshot.get(Keys.POWER).isPresent()) {
-			for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
-				Location<World> location = snapshot.getLocation().get().getRelative(entry.getKey());
+	public void onNotifyNeighborBlockEvent(NotifyNeighborBlockEvent event) {
+		for(LocatableBlock block : event.getCause().allOf(LocatableBlock.class)) {
+			Location<World> location = block.getLocation();
+			if (location.get(Keys.POWER).isPresent()) {
+				for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
+					Location<World> loc = location.getRelative(entry.getKey());
+	
+					Optional<Spawner> optionalSpawner = Spawner.get(loc);
+	
+					if (optionalSpawner.isPresent()) {
+						Spawner spawner = optionalSpawner.get();
 
-				Optional<Spawner> optionalSpawner = Spawner.get(location);
-
-				if (optionalSpawner.isPresent()) {
-					Spawner spawner = optionalSpawner.get();
-
-					if (spawner.isEnabled() == snapshot.get(Keys.POWER).get() >= 1) {
-						spawner.setEnabled(!(snapshot.get(Keys.POWER).get() >= 1));
-						spawner.update();
+						if (spawner.isEnabled() == location.get(Keys.POWER).get() >= 1) {
+							spawner.setEnabled(!(location.get(Keys.POWER).get() >= 1));
+							spawner.update();
+						}
 					}
 				}
-			}
-		} else if (snapshot.get(Keys.POWERED).isPresent()) {
-			for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
-				Location<World> location = snapshot.getLocation().get().getRelative(entry.getKey());
+			} else if (location.get(Keys.POWERED).isPresent()) {
+				for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
+					Location<World> loc = location.getRelative(entry.getKey());
+	
+					Optional<Spawner> optionalSpawner = Spawner.get(loc);
+	
+					if (optionalSpawner.isPresent()) {
+						Spawner spawner = optionalSpawner.get();
 
-				Optional<Spawner> optionalSpawner = Spawner.get(location);
-
-				if (optionalSpawner.isPresent()) {
-					Spawner spawner = optionalSpawner.get();
-
-					if (spawner.isEnabled() == snapshot.get(Keys.POWERED).get()) {
-						spawner.setEnabled(!snapshot.get(Keys.POWERED).get());
-						spawner.update();
+						if (spawner.isEnabled() == location.get(Keys.POWERED).get()) {
+							spawner.setEnabled(!location.get(Keys.POWERED).get());
+							spawner.update();
+						}
 					}
 				}
-			}
-		} else if (snapshot.getState().getType().equals(BlockTypes.REDSTONE_BLOCK)) {
-			for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
-				Location<World> location = snapshot.getLocation().get().getRelative(entry.getKey());
-
-				Optional<Spawner> optionalSpawner = Spawner.get(location);
-
-				if (optionalSpawner.isPresent()) {
-					Spawner spawner = optionalSpawner.get();
-
-					if (spawner.isEnabled()) {
-						spawner.setEnabled(false);
-						spawner.update();
+			} else if (block.getBlockState().getType().equals(BlockTypes.REDSTONE_BLOCK)) {
+				for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
+					Location<World> loc = location.getRelative(entry.getKey());
+	
+					Optional<Spawner> optionalSpawner = Spawner.get(loc);
+	
+					if (optionalSpawner.isPresent()) {
+						Spawner spawner = optionalSpawner.get();
+	
+						if (spawner.isEnabled()) {
+							spawner.setEnabled(false);
+							spawner.update();
+						}
 					}
 				}
-			}
-		} else if (snapshot.getState().getType().equals(BlockTypes.REDSTONE_TORCH)) {
-			for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
-				Location<World> location = snapshot.getLocation().get().getRelative(entry.getKey());
-
-				Optional<Spawner> optionalSpawner = Spawner.get(location);
-
-				if (optionalSpawner.isPresent()) {
-					Spawner spawner = optionalSpawner.get();
-
-					if (spawner.isEnabled()) {
-						spawner.setEnabled(false);
-						spawner.update();
+			} else if (block.getBlockState().getType().equals(BlockTypes.REDSTONE_TORCH)) {
+				for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
+					Location<World> loc = location.getRelative(entry.getKey());
+	
+					Optional<Spawner> optionalSpawner = Spawner.get(loc);
+	
+					if (optionalSpawner.isPresent()) {
+						Spawner spawner = optionalSpawner.get();
+	
+						if (spawner.isEnabled()) {
+							spawner.setEnabled(false);
+							spawner.update();
+						}
 					}
 				}
-			}
-		} else {
-			for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
-				Location<World> location = snapshot.getLocation().get().getRelative(entry.getKey());
-
-				Optional<Spawner> optionalSpawner = Spawner.get(location);
-
-				if (optionalSpawner.isPresent()) {
-					Spawner spawner = optionalSpawner.get();
-
-					if (!spawner.isEnabled()) {
-						spawner.setEnabled(true);
-						spawner.update();
+			} else {
+				for (Entry<Direction, BlockState> entry : event.getNeighbors().entrySet()) {
+					Location<World> loc = location.getRelative(entry.getKey());
+	
+					Optional<Spawner> optionalSpawner = Spawner.get(loc);
+	
+					if (optionalSpawner.isPresent()) {
+						Spawner spawner = optionalSpawner.get();
+	
+						if (!spawner.isEnabled()) {
+							spawner.setEnabled(true);
+							spawner.update();
+						}
 					}
 				}
 			}
@@ -255,6 +328,14 @@ public class SpawnerListener {
 		if (optionalItemStack.isPresent()) {
 			return;
 		}
+		
+		Inventory inventory = Inventory.builder().of(InventoryArchetypes.DISPENSER)
+				.property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(Text.of("Spawner")))
+				.listener(InteractInventoryEvent.Close.class, new SpawnerInventoryHandler.Close(spawner))
+				.listener(InteractInventoryEvent.Open.class, new SpawnerInventoryHandler.Open(spawner))
+				.build(Main.getPlugin());
+
+		player.openInventory(inventory);
 		
 		int score = spawner.getEntities().size() + 2;
 		
